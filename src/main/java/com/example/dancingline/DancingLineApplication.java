@@ -16,7 +16,7 @@ public class DancingLineApplication extends Application {
         FXMLLoader root = new FXMLLoader(getClass().getResource("dancingline-view.fxml"));
         Scene scene = new Scene(root.load());
         stage.setScene(scene);
-
+        stage.setTitle("DancingLine");
         stage.show();
     }
 }
