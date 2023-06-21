@@ -5,6 +5,7 @@ import com.example.dancingline.motionelements.Sprite;
 import javafx.scene.Node;
 
 public class SpriteBouncing extends Sprite {
+
     public SpriteBouncing(Node view) {
         super(view);
     }
@@ -61,6 +62,4 @@ public class SpriteBouncing extends Sprite {
             getVelocity().y *= -1;
         }
     }
-
-
 }

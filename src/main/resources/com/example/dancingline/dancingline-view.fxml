@@ -1,14 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.shape.Circle?>
 <?import javafx.scene.shape.QuadCurve?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.dancingline.DancingLineController">
-   <center>
-      <Button fx:id="prova" mnemonicParsing="false" onAction="#onButtunClick" text="Button" BorderPane.alignment="CENTER" />
-   </center>
-   <bottom>
-      <QuadCurve fx:id="quadCurve" controlX="21.33331298828125" controlY="-108.77088928222656" endX="300.0" fill="#0084ff1e" startX="-300.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="2.0" BorderPane.alignment="CENTER" />
-   </bottom>
-</BorderPane>
+<AnchorPane fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <QuadCurve fx:id="quadCurve" controlX="-97.33331298828125" controlY="-51.000030517578125" endX="300.0" endY="42.999969482421875" fill="DODGERBLUE" layoutX="300.0" layoutY="335.0" startX="-300.0" startY="42.999969482421875" stroke="BLACK" strokeType="INSIDE" />
+      <Circle fx:id="circle" fill="DODGERBLUE" layoutX="196.0" layoutY="240.0" radius="17.0" stroke="BLACK" strokeType="INSIDE" />
+   </children>
+</AnchorPane>
