@@ -53,7 +53,7 @@ public class DancingLineController {
 
     private void initializeObjects() {
         bouncingSprites.clear();
-        for (int i = 0; i < 20; i++) {
+        for (int i = 0; i < 2; i++) {
             bouncingSprites.add(generateBoncingSprite());
         }
         root.getChildren().clear();
@@ -61,9 +61,12 @@ public class DancingLineController {
     }
 
     private SpriteBouncing generateBoncingSprite() {
-        Circle view = new Circle(50);
+        Circle view = new Circle(30);
         view.setStroke(Color.ORANGE);
         view.setFill(Color.ORANGE.deriveColor(1, 1, 1, 0.3));
+
+        view.setTranslateX(30);
+        view.setTranslateY(30);
 
         RandomGenerator rnd = RandomGenerator.getDefault();
         PVector location = new PVector(rnd.nextDouble() * root.getHeight(), rnd.nextDouble() * root.getHeight());
@@ -90,7 +93,6 @@ public class DancingLineController {
     }
 
     private void mainLoop() {
-        System.out.println("SONO NEL MAIN LOOP");
         // update bouncing sprites
         bouncingSprites.forEach(spriteBouncing -> spriteBouncing.update());
     }
