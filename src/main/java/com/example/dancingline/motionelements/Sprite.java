@@ -2,7 +2,8 @@ package com.example.dancingline.motionelements;
 
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
-import javafx.scene.layout.Region;
+import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
 
 public class Sprite extends Region {
     PVector location;
@@ -97,9 +98,13 @@ public class Sprite extends Region {
     }
 
     public void update() {
+        // update velocity and location
         velocity = velocity.add(acceleration);
-        velocity = velocity.limit(Balls.SPRITE_MAX_SPEED);
         location = location.add(velocity);
+        // update position on parent component
+        setTranslateX(location.x);
+        setTranslateY(location.y);
+
     }
 
     public boolean intersects(Sprite other) {

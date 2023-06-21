@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.shape.Circle?>
+<?import javafx.scene.layout.Pane?>
 <?import javafx.scene.shape.QuadCurve?>
 
-<AnchorPane fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1">
+<AnchorPane fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="840.0" prefWidth="850.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.dancingline.DancingLineController">
    <children>
-      <QuadCurve fx:id="quadCurve" controlX="-97.33331298828125" controlY="-51.000030517578125" endX="300.0" endY="42.999969482421875" fill="DODGERBLUE" layoutX="300.0" layoutY="335.0" startX="-300.0" startY="42.999969482421875" stroke="BLACK" strokeType="INSIDE" />
-      <Circle fx:id="circle" fill="DODGERBLUE" layoutX="196.0" layoutY="240.0" radius="17.0" stroke="BLACK" strokeType="INSIDE" />
+      <QuadCurve fx:id="quadCurve" controlX="-97.33331298828125" controlY="-51.000030517578125" endX="549.9999389648438" endY="42.999969482421875" fill="DODGERBLUE" layoutX="309.0" layoutY="768.0" startX="-317.51202392578125" startY="42.99993896484375" stroke="BLACK" strokeType="INSIDE" />
+      <Pane fx:id="pane" layoutX="206.0" layoutY="176.0" prefHeight="360.0" prefWidth="394.0" />
    </children>
 </AnchorPane>

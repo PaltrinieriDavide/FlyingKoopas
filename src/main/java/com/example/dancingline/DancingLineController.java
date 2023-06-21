@@ -13,6 +13,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Bounds;
 import javafx.scene.control.Button;
+import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.CubicCurve;
@@ -33,18 +34,11 @@ import javafx.util.Duration;
 public class DancingLineController {
 
     public static double SPRITE_MAX_SPEED = 20;
-
     @FXML
     private QuadCurve quadCurve;
 
     @FXML
     private AnchorPane root;
-
-    @FXML
-    private Button prova;
-
-    @FXML
-    private Circle circle;
     AnimationTimer timer;
     List<SpriteBouncing> bouncingSprites = new ArrayList<>();
 
@@ -53,8 +47,8 @@ public class DancingLineController {
     }
 
     void onReset() {
-        initializeObjects();
         initializeTimer();
+        initializeObjects();
     }
 
     private void initializeObjects() {
@@ -67,13 +61,17 @@ public class DancingLineController {
     }
 
     private SpriteBouncing generateBoncingSprite() {
-        Rectangle view = new Rectangle(100, 100);
+        Circle view = new Circle(50);
         view.setStroke(Color.ORANGE);
         view.setFill(Color.ORANGE.deriveColor(1, 1, 1, 0.3));
 
         RandomGenerator rnd = RandomGenerator.getDefault();
-        PVector location = new PVector(rnd.nextDouble() * root.getWidth(), rnd.nextDouble() * root.getHeight());
+        PVector location = new PVector(rnd.nextDouble() * root.getHeight(), rnd.nextDouble() * root.getHeight());
         PVector velocity = new PVector(rnd.nextDouble() * SPRITE_MAX_SPEED, rnd.nextDouble() * SPRITE_MAX_SPEED);
+
+        System.out.println(location.toString());
+        System.out.println(velocity.toString());
+
         return new SpriteBouncing(view, location, velocity);
     }
 
@@ -92,8 +90,9 @@ public class DancingLineController {
     }
 
     private void mainLoop() {
+        System.out.println("SONO NEL MAIN LOOP");
         // update bouncing sprites
-        bouncingSprites.forEach(SpriteBouncing::update);
+        bouncingSprites.forEach(spriteBouncing -> spriteBouncing.update());
     }
 
     protected void updateCurve(double x1, double y1){
