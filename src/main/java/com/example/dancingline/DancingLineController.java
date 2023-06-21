@@ -45,10 +45,12 @@ public class DancingLineController {
 
     @FXML
     private Circle circle;
-
-
     AnimationTimer timer;
     List<SpriteBouncing> bouncingSprites = new ArrayList<>();
+
+    public void initialize() {
+        onReset();
+    }
 
     void onReset() {
         initializeObjects();
