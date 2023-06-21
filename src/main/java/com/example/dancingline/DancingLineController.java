@@ -53,10 +53,10 @@ public class DancingLineController {
 
     private void initializeObjects() {
         bouncingSprites.clear();
-        for (int i = 0; i < 2; i++) {
+        for (int i = 0; i < 7; i++) {
             bouncingSprites.add(generateBoncingSprite());
         }
-        root.getChildren().clear();
+        //root.getChildren().clear();
         root.getChildren().addAll(bouncingSprites);
     }
 
@@ -71,11 +71,12 @@ public class DancingLineController {
         RandomGenerator rnd = RandomGenerator.getDefault();
         PVector location = new PVector(rnd.nextDouble() * root.getHeight(), rnd.nextDouble() * root.getHeight());
         PVector velocity = new PVector(rnd.nextDouble() * SPRITE_MAX_SPEED, rnd.nextDouble() * SPRITE_MAX_SPEED);
+        PVector acceleration = new PVector(0, 5);
 
         System.out.println(location.toString());
         System.out.println(velocity.toString());
 
-        return new SpriteBouncing(view, location, velocity);
+        return new SpriteBouncing(view, location, velocity, acceleration);
     }
 
     private void initializeTimer() {
