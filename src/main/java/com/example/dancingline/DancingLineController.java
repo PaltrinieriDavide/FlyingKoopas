@@ -43,6 +43,7 @@ public class DancingLineController {
     List<SpriteBouncing> bouncingSprites = new ArrayList<>();
 
     public void initialize() {
+        root.setStyle("-fx-background-color: black;");
         onReset();
     }
 
