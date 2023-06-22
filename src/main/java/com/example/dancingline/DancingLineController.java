@@ -33,7 +33,7 @@ import javafx.util.Duration;
 
 public class DancingLineController {
 
-    public static double SPRITE_MAX_SPEED = 20;
+    public static double SPRITE_MAX_SPEED = 10;
     @FXML
     private QuadCurve quadCurve;
 
@@ -54,7 +54,7 @@ public class DancingLineController {
 
     private void initializeObjects() {
         bouncingSprites.clear();
-        for (int i = 0; i < 7; i++) {
+        for (int i = 0; i < 1; i++) {
             bouncingSprites.add(generateBoncingSprite());
         }
         //root.getChildren().clear();
@@ -62,12 +62,12 @@ public class DancingLineController {
     }
 
     private SpriteBouncing generateBoncingSprite() {
-        Circle view = new Circle(30);
-        view.setStroke(Color.ORANGE);
-        view.setFill(Color.ORANGE.deriveColor(1, 1, 1, 0.3));
+        Circle view = new Circle(10);
+        view.setStroke(Color.BLUEVIOLET);
+        view.setFill(Color.BLUEVIOLET.deriveColor(1, 1, 1, 1));
 
-        view.setTranslateX(30);
-        view.setTranslateY(30);
+        view.setTranslateX(10);
+        view.setTranslateY(10);
 
         RandomGenerator rnd = RandomGenerator.getDefault();
         PVector location = new PVector(rnd.nextDouble() * root.getHeight(), rnd.nextDouble() * root.getHeight());
@@ -95,6 +95,7 @@ public class DancingLineController {
     }
 
     private void mainLoop() {
+
         // update bouncing sprites
         bouncingSprites.forEach(spriteBouncing -> spriteBouncing.update());
     }
