@@ -44,6 +44,13 @@ public class DancingLineController {
 
     public void initialize() {
         root.setStyle("-fx-background-color: black;");
+        //AnchorPane.setBottomAnchor(quadCurve, 10.0);
+        quadCurve.endXProperty().bind(root.widthProperty().multiply(1.0));
+        quadCurve.startXProperty().bind(root.widthProperty().multiply(0.0));
+        quadCurve.setStartY(root.getPrefHeight()-(root.getPrefHeight())*0.5);
+        quadCurve.setEndY(root.getPrefHeight()-(root.getPrefHeight())*0.5);
+
+
         onReset();
     }
 
