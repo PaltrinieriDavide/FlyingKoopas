@@ -25,7 +25,7 @@ public class ChangingSceneController {
         root = FXMLLoader.load(getClass().getResource("dancingline-view.fxml"));
         stage = (Stage)((Node)event.getSource()).getScene().getWindow();
 
-        scene = new Scene(root/*, 1800, 850*/);
+        scene = new Scene(root);
         stage.setScene(scene);
         stage.setMaximized(true);
         stage.setResizable(false);

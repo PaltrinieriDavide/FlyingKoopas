@@ -7,6 +7,7 @@ import javafx.animation.AnimationTimer;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
+import javafx.beans.binding.Bindings;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -18,6 +19,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.CubicCurve;
 import javafx.scene.shape.Rectangle;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.scene.shape.QuadCurve;
 
@@ -39,20 +41,30 @@ public class DancingLineController {
 
     @FXML
     private AnchorPane root;
+
     AnimationTimer timer;
     List<SpriteBouncing> bouncingSprites = new ArrayList<>();
 
     public void initialize() {
         root.setStyle("-fx-background-color: black;");
-        //AnchorPane.setBottomAnchor(quadCurve, 10.0);
+        //root.prefHeightProperty().bind()
+        //quadCurve.setStartY(root.getLayoutBounds().getMaxY());
+        //quadCurve.setEndY(root.getLayoutBounds().getMaxY());
         quadCurve.endXProperty().bind(root.widthProperty().multiply(1.0));
         quadCurve.startXProperty().bind(root.widthProperty().multiply(0.0));
-        quadCurve.setStartY(root.getPrefHeight()-(root.getPrefHeight())*0.5);
-        quadCurve.setEndY(root.getPrefHeight()-(root.getPrefHeight())*0.5);
+        System.out.println(root.getPrefHeight());
+        //quadCurve.setStartY(root.getHeight()-(root.getHeight())*0.5);
+        //quadCurve.setEndY(root.getHeight()-(root.getHeight())*0.5);
+
+        quadCurve.startYProperty().bind(root.heightProperty().multiply(0.3));
+        quadCurve.endYProperty().bind(root.heightProperty().multiply(0.3));
+
+
 
 
         onReset();
     }
+
 
     void onReset() {
         initializeTimer();
@@ -72,7 +84,7 @@ public class DancingLineController {
         Circle view = new Circle(10);
         view.setStroke(Color.BLUEVIOLET);
         view.setFill(Color.BLUEVIOLET.deriveColor(1, 1, 1, 1));
-
+        System.out.println(root.getHeight());
         view.setTranslateX(10);
         view.setTranslateY(10);
 
@@ -81,8 +93,7 @@ public class DancingLineController {
         PVector velocity = new PVector(rnd.nextDouble() * SPRITE_MAX_SPEED, rnd.nextDouble() * SPRITE_MAX_SPEED);
         PVector acceleration = new PVector(0, 5);
 
-        System.out.println(location.toString());
-        System.out.println(velocity.toString());
+
 
         return new SpriteBouncing(view, location, velocity, acceleration);
     }
@@ -102,8 +113,18 @@ public class DancingLineController {
     }
 
     private void mainLoop() {
+        if(quadCurve.localToParent(quadCurve.getStartX(), quadCurve.getStartY()).getY()>root.getHeight()){
+            //quadCurve.setStartY(quadCurve.getStartY()-(quadCurve.localToParent(quadCurve.getStartX(), quadCurve.getStartY()).getY()-root.getHeight()));
+        }
+        if(quadCurve.getEndY()>root.getHeight()){
+            System.out.println("yuppi");
+        }
 
+        //quadCurve.setStartY(1);
+        //quadCurve.setEndY(root.getPrefHeight()-(root.getPrefHeight())*0.5);
         // update bouncing sprites
+        //System.out.println("--" + root.getHeight() + "    " + quadCurve.localToParent(quadCurve.getStartX(), quadCurve.getStartY()));
+        //System.out.println(root.getHeight()+ "    " + quadCurve.getEndY());
         bouncingSprites.forEach(spriteBouncing -> spriteBouncing.update());
     }
 
