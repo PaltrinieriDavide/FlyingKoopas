@@ -12,9 +12,11 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Bounds;
+import javafx.geometry.Point2D;
 import javafx.scene.control.Button;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.Material;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.CubicCurve;
 import javafx.scene.shape.Rectangle;
@@ -33,7 +35,7 @@ import javafx.util.Duration;
 
 public class DancingLineController {
 
-    public static double SPRITE_MAX_SPEED = 20;
+    public static double SPRITE_MAX_SPEED = 7;
     @FXML
     private QuadCurve quadCurve;
 
@@ -44,6 +46,24 @@ public class DancingLineController {
 
     public void initialize() {
         root.setStyle("-fx-background-color: black;");
+
+        Point2D startCoords = quadCurve.localToParent(quadCurve.getStartX(), quadCurve.getStartY());
+        Point2D controlCoords = quadCurve.localToParent(quadCurve.getControlX(), quadCurve.getControlY());
+        Point2D endCoords = quadCurve.localToParent(quadCurve.getEndX(), quadCurve.getEndY());
+
+        for (double t = 0.0; t <= 1.0; t += 0.0001) {
+            double x = Math.pow(1 - t, 2) * startCoords.getX() +
+                    2 * (1 - t) * t * controlCoords.getX() +
+                    Math.pow(t, 2) * endCoords.getX();
+
+            double y = Math.pow(1 - t, 2) * startCoords.getY() +
+                    2 * (1 - t) * t * controlCoords.getY() +
+                    Math.pow(t, 2) * endCoords.getY();
+
+            System.out.println("curva -> X " + x + " Y " + y);
+
+        }
+
         onReset();
     }
 
@@ -54,7 +74,7 @@ public class DancingLineController {
 
     private void initializeObjects() {
         bouncingSprites.clear();
-        for (int i = 0; i < 7; i++) {
+        for (int i = 0; i < 3; i++) {
             bouncingSprites.add(generateBoncingSprite());
         }
         //root.getChildren().clear();
@@ -62,20 +82,25 @@ public class DancingLineController {
     }
 
     private SpriteBouncing generateBoncingSprite() {
-        Circle view = new Circle(30);
-        view.setStroke(Color.ORANGE);
-        view.setFill(Color.ORANGE.deriveColor(1, 1, 1, 0.3));
+        Circle view = new Circle(10);
+        view.setStroke(Color.BLUEVIOLET);
+        view.setFill(Color.BLUEVIOLET.deriveColor(1, 1, 1, 1));
 
-        view.setTranslateX(30);
-        view.setTranslateY(30);
+        view.setTranslateX(10);
+        view.setTranslateY(10);
 
         RandomGenerator rnd = RandomGenerator.getDefault();
-        PVector location = new PVector(rnd.nextDouble() * root.getHeight(), rnd.nextDouble() * root.getHeight());
-        PVector velocity = new PVector(rnd.nextDouble() * SPRITE_MAX_SPEED, rnd.nextDouble() * SPRITE_MAX_SPEED);
-        PVector acceleration = new PVector(0, 5);
 
-        System.out.println(location.toString());
-        System.out.println(velocity.toString());
+        PVector location = new PVector(rnd.nextDouble() * root.getPrefHeight(), rnd.nextDouble() * root.getPrefWidth());
+        PVector velocity = new PVector(rnd.nextDouble() * SPRITE_MAX_SPEED, rnd.nextDouble() * SPRITE_MAX_SPEED);
+        PVector acceleration = new PVector(0, 1);
+
+        /*
+        PVector location = new PVector(85.794153743409 - 10 + rnd.nextDouble() * 100,300 + rnd.nextDouble() * 100);
+        PVector velocity = new PVector(7,7);
+        PVector acceleration = new PVector(0, 0);
+         */
+
 
         return new SpriteBouncing(view, location, velocity, acceleration);
     }
@@ -96,7 +121,7 @@ public class DancingLineController {
 
     private void mainLoop() {
         // update bouncing sprites
-        bouncingSprites.forEach(spriteBouncing -> spriteBouncing.update());
+        bouncingSprites.forEach(spriteBouncing -> spriteBouncing.update(quadCurve, bouncingSprites));
     }
 
     protected void updateCurve(double x1, double y1){

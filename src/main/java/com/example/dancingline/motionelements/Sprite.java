@@ -104,7 +104,6 @@ public class Sprite extends Region {
         // update position on parent component
         setTranslateX(location.x);
         setTranslateY(location.y);
-
     }
 
     public boolean intersects(Sprite other) {
