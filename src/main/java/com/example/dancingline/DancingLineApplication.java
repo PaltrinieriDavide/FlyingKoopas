@@ -17,7 +17,7 @@ public class DancingLineApplication extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
-        FXMLLoader root = new FXMLLoader(getClass().getResource("dancingline-view.fxml"));
+        FXMLLoader root = new FXMLLoader(getClass().getResource("menu-view.fxml"));
         Scene scene = new Scene(root.load());
         stage.setScene(scene);
         stage.setTitle("DancingLine");
