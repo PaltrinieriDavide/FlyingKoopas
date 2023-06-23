@@ -14,6 +14,8 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Bounds;
 import javafx.scene.control.Button;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -24,9 +26,10 @@ import javafx.stage.Stage;
 import javafx.scene.shape.QuadCurve;
 
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.ResourceBundle;
+import java.util.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.random.RandomGenerator;
 
 import javafx.scene.layout.AnchorPane;
@@ -44,6 +47,9 @@ public class DancingLineController {
 
     AnimationTimer timer;
     List<SpriteBouncing> bouncingSprites = new ArrayList<>();
+
+    private static final int PERIOD = 1000; // Milliseconds
+    private static final int MAX_INTERVAL = 3000; // Milliseconds
 
     public void initialize() {
         root.setStyle("-fx-background-color: black;");
@@ -78,6 +84,7 @@ public class DancingLineController {
         }
         //root.getChildren().clear();
         root.getChildren().addAll(bouncingSprites);
+        root.getChildren().add(generateItem());
     }
 
     private SpriteBouncing generateBoncingSprite() {
@@ -98,6 +105,32 @@ public class DancingLineController {
         return new SpriteBouncing(view, location, velocity, acceleration);
     }
 
+    private Sprite generateItem(){
+        Image img = new Image(Objects.requireNonNull(getClass().getResourceAsStream("assets/item.png")));
+        ImageView item = new ImageView();
+        item.setImage(img);
+        item.setFitHeight(60);
+        item.setFitWidth(60);
+        double x = 0, y=0, noise=0;
+        boolean check = false;
+        RandomGenerator rnd = RandomGenerator.getDefault();
+        while(check == false){
+            noise = rnd.nextDouble();
+            x = rnd.nextDouble();
+            y = rnd.nextDouble();
+            if(y<0.6){
+                check = true;
+            }
+        }
+        System.out.println("--" + x + "." + noise + "--" + root.getWidth());
+        System.out.println("__" + y + "__" +root.getHeight());
+        item.setX((x+noise)*1000);
+        item.setY(y*1000);
+        PVector location = new PVector(rnd.nextDouble() * root.getPrefWidth(), rnd.nextDouble() * root.getPrefHeight());
+        PVector velocity = new PVector(0, 0);
+        return new Sprite(item, location, velocity);
+    }
+
     private void initializeTimer() {
         if (timer != null) {
             timer.stop();
@@ -113,10 +146,10 @@ public class DancingLineController {
     }
 
     private void mainLoop() {
-        if(quadCurve.localToParent(quadCurve.getStartX(), quadCurve.getStartY()).getY()>root.getHeight()){
+        if (quadCurve.localToParent(quadCurve.getStartX(), quadCurve.getStartY()).getY() > root.getHeight()) {
             //quadCurve.setStartY(quadCurve.getStartY()-(quadCurve.localToParent(quadCurve.getStartX(), quadCurve.getStartY()).getY()-root.getHeight()));
         }
-        if(quadCurve.getEndY()>root.getHeight()){
+        if (quadCurve.getEndY() > root.getHeight()) {
             System.out.println("yuppi");
         }
 
@@ -125,12 +158,14 @@ public class DancingLineController {
         // update bouncing sprites
         //System.out.println("--" + root.getHeight() + "    " + quadCurve.localToParent(quadCurve.getStartX(), quadCurve.getStartY()));
         //System.out.println(root.getHeight()+ "    " + quadCurve.getEndY());
-        bouncingSprites.forEach(spriteBouncing -> spriteBouncing.update());
-    }
 
+        bouncingSprites.forEach(spriteBouncing -> spriteBouncing.update());
+
+    }
     protected void updateCurve(double x1, double y1){
         quadCurve.setControlX(x1);
         quadCurve.setControlY(y1);
     }
 
 }
+
