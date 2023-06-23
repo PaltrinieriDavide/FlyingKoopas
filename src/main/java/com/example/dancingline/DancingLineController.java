@@ -4,6 +4,8 @@ import com.example.dancingline.motionelements.PVector;
 import com.example.dancingline.motionelements.Sprite;
 import javafx.animation.Animation;
 import javafx.animation.AnimationTimer;
+import javafx.geometry.Point2D;
+import javafx.scene.paint.Material;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
@@ -13,6 +15,7 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Bounds;
+import javafx.geometry.Point2D;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -38,7 +41,7 @@ import javafx.util.Duration;
 
 public class DancingLineController {
 
-    public static double SPRITE_MAX_SPEED = 10;
+    public static double SPRITE_MAX_SPEED = 7;
     @FXML
     private QuadCurve quadCurve;
 
@@ -48,8 +51,6 @@ public class DancingLineController {
     AnimationTimer timer;
     List<SpriteBouncing> bouncingSprites = new ArrayList<>();
 
-    private static final int PERIOD = 1000; // Milliseconds
-    private static final int MAX_INTERVAL = 3000; // Milliseconds
 
     public void initialize() {
         root.setStyle("-fx-background-color: black;");
@@ -66,6 +67,23 @@ public class DancingLineController {
         quadCurve.endYProperty().bind(root.heightProperty().multiply(0.3));
 
 
+
+        Point2D startCoords = quadCurve.localToParent(quadCurve.getStartX(), quadCurve.getStartY());
+        Point2D controlCoords = quadCurve.localToParent(quadCurve.getControlX(), quadCurve.getControlY());
+        Point2D endCoords = quadCurve.localToParent(quadCurve.getEndX(), quadCurve.getEndY());
+
+        for (double t = 0.0; t <= 1.0; t += 0.0001) {
+            double x = Math.pow(1 - t, 2) * startCoords.getX() +
+                    2 * (1 - t) * t * controlCoords.getX() +
+                    Math.pow(t, 2) * endCoords.getX();
+
+            double y = Math.pow(1 - t, 2) * startCoords.getY() +
+                    2 * (1 - t) * t * controlCoords.getY() +
+                    Math.pow(t, 2) * endCoords.getY();
+
+            System.out.println("curva -> X " + x + " Y " + y);
+
+        }
 
 
         onReset();
@@ -92,11 +110,11 @@ public class DancingLineController {
         view.setStroke(Color.BLUEVIOLET);
         view.setFill(Color.BLUEVIOLET.deriveColor(1, 1, 1, 1));
         System.out.println(root.getHeight());
-        view.setTranslateX(10);
-        view.setTranslateY(10);
+        view.setTranslateX(100);
+        view.setTranslateY(100);
 
         RandomGenerator rnd = RandomGenerator.getDefault();
-        PVector location = new PVector(rnd.nextDouble() * root.getHeight(), rnd.nextDouble() * root.getHeight());
+        PVector location = new PVector(100, 100);
         PVector velocity = new PVector(rnd.nextDouble() * SPRITE_MAX_SPEED, rnd.nextDouble() * SPRITE_MAX_SPEED);
         PVector acceleration = new PVector(0, 5);
 
@@ -159,7 +177,7 @@ public class DancingLineController {
         //System.out.println("--" + root.getHeight() + "    " + quadCurve.localToParent(quadCurve.getStartX(), quadCurve.getStartY()));
         //System.out.println(root.getHeight()+ "    " + quadCurve.getEndY());
 
-        bouncingSprites.forEach(spriteBouncing -> spriteBouncing.update());
+        bouncingSprites.forEach(spriteBouncing -> spriteBouncing.update(quadCurve, bouncingSprites));
 
     }
     protected void updateCurve(double x1, double y1){
