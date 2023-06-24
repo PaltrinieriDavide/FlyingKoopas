@@ -1,0 +1,22 @@
+.root{
+    -fx-background-image:url('../assets/MenuBackground.png');
+    -fx-background-size:cover;
+}
+.custom-button {
+    -fx-background-color: #FDF5E6;
+    -fx-background-radius: 20;
+    -fx-padding: 8px 16px;
+    -fx-border-radius: 20px;
+    -fx-border-color: #E4D8C5 ;
+    -fx-border-width: 1px;
+}
+
+.custom-button:hover {
+    -fx-background-color: #e5cc9e;
+    -fx-border-color: #d0ad67;
+}
+
+.custom-button:pressed {
+    -fx-background-color: #e5cc9e;
+    -fx-border-color: #d0ad67;
+}
