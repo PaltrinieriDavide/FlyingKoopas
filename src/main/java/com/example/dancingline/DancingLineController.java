@@ -38,7 +38,7 @@ import javafx.util.Duration;
 
 public class DancingLineController {
 
-    public static double SPRITE_MAX_SPEED = 30;
+    public static double SPRITE_MAX_SPEED = 15;
     @FXML
     private QuadCurve quadCurve;
 
@@ -88,12 +88,12 @@ public class DancingLineController {
                     2 * (1 - t) * t * controlCoords.getY() +
                     Math.pow(t, 2) * endCoords.getY();
 
-            System.out.println("curva -> X " + x + " Y " + y);
+            //System.out.println("curva -> X " + x + " Y " + y);
 
         }
 
         bouncingSprites.clear();
-        for (int i = 0; i < 2; i++) {
+        for (int i = 0; i < 5; i++) {
             bouncingSprites.add(generateBoncingSprite());
         }
         //root.getChildren().clear();
@@ -106,12 +106,16 @@ public class DancingLineController {
         view.setStroke(Color.BLUEVIOLET);
         view.setFill(Color.BLUEVIOLET.deriveColor(1, 1, 1, 1));
         System.out.println(root.getHeight());
-        view.setTranslateX(10);
-        view.setTranslateY(10);
+        view.setTranslateX(view.getRadius());
+        view.setTranslateY(view.getRadius());
 
-        RandomGenerator rnd = RandomGenerator.getDefault();
-        PVector location = new PVector(rnd.nextDouble() * 600, rnd.nextDouble() * 700);
-        PVector velocity = new PVector(rnd.nextDouble() * SPRITE_MAX_SPEED / 2, rnd.nextDouble() * SPRITE_MAX_SPEED);
+        System.out.println( root.getPrefHeight()+ " " + root.getPrefWidth());
+
+        Random rand = new Random();
+
+        //RandomGenerator rnd = RandomGenerator.getDefault();
+        PVector location = new PVector(rand.nextDouble(root.getPrefWidth()), rand.nextDouble(root.getPrefHeight()));
+        PVector velocity = new PVector(rand.nextDouble() * SPRITE_MAX_SPEED / 2, rand.nextDouble() * SPRITE_MAX_SPEED);
         PVector acceleration = new PVector(0, 0.05);
 
         return new SpriteBouncing(view, location, velocity, acceleration);
@@ -134,8 +138,8 @@ public class DancingLineController {
                 check = true;
             }
         }
-        System.out.println("--" + x + "." + noise + "--" + root.getWidth());
-        System.out.println("__" + y + "__" +root.getHeight());
+        //System.out.println("--" + x + "." + noise + "--" + root.getWidth());
+        //System.out.println("__" + y + "__" +root.getHeight());
         item.setX((x+noise)*1000);
         item.setY(y*1000);
         PVector location = new PVector(rnd.nextDouble() * root.getPrefWidth(), rnd.nextDouble() * root.getPrefHeight());

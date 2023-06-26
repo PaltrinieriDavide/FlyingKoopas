@@ -3,7 +3,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.shape.QuadCurve?>
 
-<AnchorPane fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.dancingline.DancingLineController">
+<AnchorPane fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="529.0" prefWidth="1800.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.dancingline.DancingLineController">
    <children>
       <QuadCurve fx:id="quadCurve" controlX="305.0" controlY="-345.66668701171875" endX="536.0" endY="600.0" fill="#2197ff00" layoutX="313.0" layoutY="794.0" startX="-344.9999694824219" startY="603.4912109375" stroke="WHITE" strokeType="INSIDE" strokeWidth="2.0" AnchorPane.bottomAnchor="1.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="1.0" AnchorPane.topAnchor="643.6666564941406" />
    </children>

@@ -63,7 +63,7 @@ public class SpriteBouncing extends Sprite {
         if (containsPoint(quadCurve, getLocation().x - 10, getLocation().y - 10)){
             //getVelocity().x *= -1;
             getVelocity().y *= -1;
-            System.out.println("RIMBALZO su linea  " + (getLocation().x - 10) + "  " +  (getLocation().y - 10));
+           // System.out.println("RIMBALZO su linea  " + (getLocation().x - 10) + "  " +  (getLocation().y - 10));
         }
 
 
@@ -137,6 +137,10 @@ public class SpriteBouncing extends Sprite {
     public boolean containsPoint(QuadCurve quadCurve, double pointX, double pointY) {
         double tolerance = 15; // Adjust the tolerance level as needed
         double toleranceX = 10;
+        double radius = -1;
+        if(getView() instanceof Circle){
+            radius = ((Circle) getView()).getRadius();
+        }
 
         Point2D startCoords = quadCurve.localToParent(quadCurve.getStartX(), quadCurve.getStartY());
         Point2D controlCoords = quadCurve.localToParent(quadCurve.getControlX(), quadCurve.getControlY());
@@ -157,8 +161,10 @@ public class SpriteBouncing extends Sprite {
             if (Math.abs(x - pointX) <= tolerance && Math.abs(y - pointY) <= tolerance){
                 return true;
             }
-            if (pointY > y && Math.abs(pointX + 10 - x) <= toleranceX) {
-                getLocation().y = y - 20;
+
+            if (pointY > y && Math.abs(pointX + radius - x) <= toleranceX) {
+                //System.out.println("----------" + getView() + "----" + radius);
+                getLocation().y = y - 2*radius;
                 return true;
             }
         }
