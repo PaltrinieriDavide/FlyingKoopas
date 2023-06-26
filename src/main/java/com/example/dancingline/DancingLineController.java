@@ -48,6 +48,9 @@ public class DancingLineController {
     AnimationTimer timer;
     List<SpriteBouncing> bouncingSprites = new ArrayList<>();
 
+    Deque<Sprite> priorityCode = new ArrayDeque<>();
+
+
 
     public void initialize() {
         onReset();
@@ -122,11 +125,11 @@ public class DancingLineController {
     }
 
     private Sprite generateItem(){
-        Image img = new Image(Objects.requireNonNull(getClass().getResourceAsStream("assets/item.png")));
+        Image img = new Image(Objects.requireNonNull(getClass().getResourceAsStream("assets/pngegg.png")));
         ImageView item = new ImageView();
         item.setImage(img);
-        item.setFitHeight(60);
-        item.setFitWidth(60);
+        item.setFitHeight(50);
+        item.setFitWidth(50);
         double x = 0, y=0, noise=0;
         boolean check = false;
         RandomGenerator rnd = RandomGenerator.getDefault();
@@ -153,27 +156,45 @@ public class DancingLineController {
         }
         timer = new AnimationTimer() {
             long delta;
+            int time = 0;
             long lastFrameTime;
             @Override
             public void handle(long now) {
-                mainLoop();
+                mainLoop(time);
+                time++;
+                if(time == 501){
+                    time = 0;
+                }
             }
         };
         timer.start();
     }
 
-    private void mainLoop() {
+    private void mainLoop(int time) {
+        //boolean check = false;
 
-        /*
-        if (quadCurve.localToParent(quadCurve.getStartX(), quadCurve.getStartY()).getY() > root.getHeight()) {
-            //quadCurve.setStartY(quadCurve.getStartY()-(quadCurve.localToParent(quadCurve.getStartX(), quadCurve.getStartY()).getY()-root.getHeight()));
-        }
-        if (quadCurve.getEndY() > root.getHeight()) {
-            System.out.println("yuppi");
-        }
-         */
+        Random rand = new Random();
+        double value = rand.nextDouble(1);
+       // System.out.println("++++" + value);
 
+        if (value >0.995){
+            Sprite a = generateItem();
+            priorityCode.addFirst(a);
+            root.getChildren().add(a);
+        }
+        if(time == 500 && priorityCode.size()>0) {
+            root.getChildren().remove(priorityCode.peekLast());
+            Sprite es = priorityCode.removeLast();
+
+        }
+        else if(priorityCode.size() == 6){
+            root.getChildren().remove(priorityCode.peekLast());
+            priorityCode.removeLast();
+        }
+        System.out.println("time: " + time);
+        ;
         bouncingSprites.forEach(spriteBouncing -> spriteBouncing.update(quadCurve, bouncingSprites));
+
     }
     protected void updateCurve(double x1, double y1){
         quadCurve.setControlX(x1);
