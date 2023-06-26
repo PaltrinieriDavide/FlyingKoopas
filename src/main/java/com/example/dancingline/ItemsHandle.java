@@ -15,7 +15,7 @@ import java.util.random.RandomGenerator;
 public class ItemsHandle {
     private AnchorPane root;
     Deque<Sprite> priorityDeque = new ArrayDeque<>();
-    int itemNumber = 5;
+    final int itemMax = 5;
 
     public ItemsHandle(AnchorPane root) {
         this.root = root;
@@ -51,15 +51,23 @@ public class ItemsHandle {
         Random rand = new Random();
         double value = rand.nextDouble(1);
         // System.out.println("++++" + value);
-        System.out.println("**** " + priorityDeque.size());
-        if (value >0.995){
+        //System.out.println("**** " + priorityDeque.size());
+        if (value >0.996 && priorityDeque.size() <5){
             Sprite a = generateItem();
             priorityDeque.addFirst(a);
             root.getChildren().add(a);
         }
-        if(time == 500 && priorityDeque.size()>0) {
-            root.getChildren().remove(priorityDeque.peekLast());
+        if((time == 500 && priorityDeque.size()>0) || (time == 500 && priorityDeque.size() >= 5)){
+            //root.getChildren().remove(priorityDeque.peekLast());
             Sprite es = priorityDeque.removeLast();
+            //PVector vec = new PVector(rand.nextDouble(1800), rand.nextDouble(600));
+            //System.out.println("###" + vec);
+            //es.setLocation(vec);
+            System.out.println(root.getPrefWidth() + "||||" + root.getPrefHeight());
+            es.setTranslateX(rand.nextDouble(root.getPrefWidth()));
+            es.setTranslateY(rand.nextDouble( root.getPrefHeight()));
+            priorityDeque.addFirst(es);
+
 
         }
 
