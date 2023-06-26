@@ -48,7 +48,8 @@ public class DancingLineController {
     AnimationTimer timer;
     List<SpriteBouncing> bouncingSprites = new ArrayList<>();
 
-    Deque<Sprite> priorityCode = new ArrayDeque<>();
+    /*Deque<Sprite> priorityCode = new ArrayDeque<>();
+    int itemNumber = 5;*/
 
 
 
@@ -119,12 +120,12 @@ public class DancingLineController {
         //RandomGenerator rnd = RandomGenerator.getDefault();
         PVector location = new PVector(rand.nextDouble(root.getPrefWidth()), rand.nextDouble(root.getPrefHeight()));
         PVector velocity = new PVector(rand.nextDouble() * SPRITE_MAX_SPEED / 2, rand.nextDouble() * SPRITE_MAX_SPEED);
-        PVector acceleration = new PVector(0, 0.05);
+        PVector acceleration = new PVector(0, 0.5);
 
         return new SpriteBouncing(view, location, velocity, acceleration);
     }
 
-    private Sprite generateItem(){
+    /*private Sprite generateItem(){
         Image img = new Image(Objects.requireNonNull(getClass().getResourceAsStream("assets/pngegg.png")));
         ImageView item = new ImageView();
         item.setImage(img);
@@ -148,7 +149,7 @@ public class DancingLineController {
         PVector location = new PVector(rnd.nextDouble() * root.getPrefWidth(), rnd.nextDouble() * root.getPrefHeight());
         PVector velocity = new PVector(0, 0);
         return new Sprite(item, location, velocity);
-    }
+    }*/
 
     private void initializeTimer() {
         if (timer != null) {
@@ -157,10 +158,11 @@ public class DancingLineController {
         timer = new AnimationTimer() {
             long delta;
             int time = 0;
+            ItemsHandle call = new ItemsHandle(root);
             long lastFrameTime;
             @Override
             public void handle(long now) {
-                mainLoop(time);
+                mainLoop(time, call);
                 time++;
                 if(time == 501){
                     time = 0;
@@ -170,29 +172,11 @@ public class DancingLineController {
         timer.start();
     }
 
-    private void mainLoop(int time) {
-        //boolean check = false;
+    private void mainLoop(int time, ItemsHandle call) {
 
-        Random rand = new Random();
-        double value = rand.nextDouble(1);
-       // System.out.println("++++" + value);
 
-        if (value >0.995){
-            Sprite a = generateItem();
-            priorityCode.addFirst(a);
-            root.getChildren().add(a);
-        }
-        if(time == 500 && priorityCode.size()>0) {
-            root.getChildren().remove(priorityCode.peekLast());
-            Sprite es = priorityCode.removeLast();
+        call.updateItems(time);
 
-        }
-        else if(priorityCode.size() == 6){
-            root.getChildren().remove(priorityCode.peekLast());
-            priorityCode.removeLast();
-        }
-        System.out.println("time: " + time);
-        ;
         bouncingSprites.forEach(spriteBouncing -> spriteBouncing.update(quadCurve, bouncingSprites));
 
     }
