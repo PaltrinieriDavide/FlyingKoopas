@@ -6,10 +6,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 
-import java.util.ArrayDeque;
-import java.util.Deque;
-import java.util.Objects;
-import java.util.Random;
+import java.util.*;
 import java.util.random.RandomGenerator;
 
 public class ItemsHandle {
@@ -21,7 +18,7 @@ public class ItemsHandle {
         this.root = root;
     }
 
-    public Sprite generateItem(){
+    public Sprite generateItem(List<SpriteBouncing> wallSprites){
         Image img = new Image(Objects.requireNonNull(getClass().getResourceAsStream("assets/pngegg.png")));
         ImageView item = new ImageView();
         item.setImage(img);
@@ -47,31 +44,27 @@ public class ItemsHandle {
         return new Sprite(item, location, velocity);
     }
 
-    public void updateItems(int time){
+    public void updateItems(int time, List<SpriteBouncing> wallSprites){
+
         Random rand = new Random();
         double value = rand.nextDouble(1);
         // System.out.println("++++" + value);
-        //System.out.println("**** " + priorityDeque.size());
-        if (value >0.990 && priorityDeque.size() <5){
-            Sprite a = generateItem();
+
+        if (value >0.995){
+            Sprite a = generateItem(wallSprites);
             priorityDeque.addFirst(a);
             root.getChildren().add(a);
         }
-        if(time == 500 && priorityDeque.size() > 0){
-            //root.getChildren().remove(priorityDeque.peekLast());
+        if(time == 500 && priorityDeque.size()>0) {
+            root.getChildren().remove(priorityDeque.peekLast());
             Sprite es = priorityDeque.removeLast();
-            PVector vec = new PVector(rand.nextDouble(1800), rand.nextDouble(600));
 
-            es.update(vec);
-
-            priorityDeque.addFirst(es);
         }
-
-        else if(priorityDeque.size() >= 6){
+        else if(priorityDeque.size() == 6){
             root.getChildren().remove(priorityDeque.peekLast());
             priorityDeque.removeLast();
         }
-        //System.out.println("time: " + time);
+        System.out.println("time: " + time);
     }
 
 

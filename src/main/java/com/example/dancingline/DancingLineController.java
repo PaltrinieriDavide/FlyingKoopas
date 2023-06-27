@@ -1,7 +1,6 @@
 package com.example.dancingline;
 
 import com.example.dancingline.motionelements.PVector;
-import com.example.dancingline.motionelements.Sprite;
 import javafx.animation.AnimationTimer;
 import javafx.fxml.FXML;
 import javafx.scene.image.Image;
@@ -10,12 +9,11 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Random;
-import java.util.random.RandomGenerator;
 
 
 public class DancingLineController {
@@ -27,7 +25,8 @@ public class DancingLineController {
 
     AnimationTimer timer;
     List<SpriteBouncing> bouncingSprites = new ArrayList<>();
-    List<SpriteBouncing> wallSprites = new ArrayList<>();
+    List<WallSprite> wallSprites = new ArrayList<>();
+    List<QuestionMarkSprite> markSprites = new ArrayList<>();
 
     public void initialize() {
         onReset();
@@ -45,7 +44,7 @@ public class DancingLineController {
             bouncingSprites.add(generateBoncingSprite());
         }
         try {
-            wallSprites=mapSetup.generateMap(root);
+            generateMap();
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         }
@@ -74,7 +73,55 @@ public class DancingLineController {
         return new SpriteBouncing(view, location, velocity, acceleration);
     }
 
-    private Sprite generateItem(){
+    private void generateMap() throws FileNotFoundException {
+        int value;
+        List<SpriteBouncing> wallList = new ArrayList<>();
+        Random rand = new Random();
+        Image imgWall = new Image(new FileInputStream("C:\\Users\\ricca\\IdeaProjects\\dancingLine\\src\\main\\resources\\com\\example\\dancingline\\assets\\wall.png"));
+        Image imgItem = new Image(new FileInputStream("C:\\Users\\ricca\\IdeaProjects\\dancingLine\\src\\main\\resources\\com\\example\\dancingline\\assets\\pngegg.png"));
+        for(int j = 0; j<9; j++){
+            for(int i = 0; i< 36; i++){
+                value=rand.nextInt(100);
+                if(value>=80){
+                    ImageView item = new ImageView();
+                    item.setImage(imgWall);
+                    item.setFitHeight(49.8);
+                    item.setFitWidth(49.8);
+                    //double x = i, y=0;
+                    PVector location = new PVector(i*49.8, j*49.8);
+                    PVector velocity = new PVector(0, 0);
+                    WallSprite wallPiece = new WallSprite(item, location, velocity);
+                    //System.out.println("++++"+ wallPiece.getLocation());
+                    wallPiece.setTranslateX(i*49.8);
+                    wallPiece.setTranslateY(j*49.8);
+                    root.getChildren().add(wallPiece);
+                    wallList.add(wallPiece);
+                }
+                else if(value<=10){
+                    ImageView item2 = new ImageView();
+                    item2.setImage(imgItem);
+                    item2.setFitHeight(49.8);
+                    item2.setFitWidth(49.8);
+                    //double x = i, y=0;
+                    PVector location = new PVector(i*49.8, j*49.8);
+                    PVector velocity = new PVector(0, 0);
+
+                    QuestionMarkSprite questionMark = new QuestionMarkSprite(rand.nextInt(3)+1, item2, location, velocity);
+
+                    System.out.println("222  " + questionMark.getType());
+
+                    questionMark.setTranslateX(i*49.8);
+                    questionMark.setTranslateY(j*49.8);
+                    root.getChildren().add(questionMark);
+                    markSprites.add(questionMark);
+                }
+
+            }
+        }
+
+    }
+
+  /*  private Sprite generateItem(){
         Image img = new Image(Objects.requireNonNull(getClass().getResourceAsStream("assets/item.png")));
         ImageView item = new ImageView();
         item.setImage(img);
@@ -98,7 +145,7 @@ public class DancingLineController {
         PVector location = new PVector(rnd.nextDouble() * root.getPrefWidth(), rnd.nextDouble() * root.getPrefHeight());
         PVector velocity = new PVector(0, 0);
         return new Sprite(item, location, velocity);
-    }
+    }*/
 
     private void initializeTimer() {
         if (timer != null) {
@@ -121,8 +168,10 @@ public class DancingLineController {
         timer.start();
     }
 
+
+
     private void mainLoop(int time, ItemsHandle call) {
-        call.updateItems(time);
+        //call.updateItems(time, wallSprites);
         bouncingSprites.forEach(spriteBouncing -> spriteBouncing.update(bouncingSprites));
     }
 }
