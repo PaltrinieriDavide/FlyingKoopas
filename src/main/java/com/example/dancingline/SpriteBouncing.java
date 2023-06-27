@@ -2,14 +2,10 @@ package com.example.dancingline;
 
 import com.example.dancingline.motionelements.PVector;
 import com.example.dancingline.motionelements.Sprite;
-import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.*;
+import javafx.scene.shape.Circle;
 import javafx.scene.shape.QuadCurve;
-import javafx.geometry.Point2D;
-import javafx.scene.transform.Transform;
 
 import java.util.List;
 
@@ -44,8 +40,7 @@ public class SpriteBouncing extends Sprite {
             if (spriteBouncing != this) {
                 if (intersects(spriteBouncing)){
                     getVelocity().x *= -1;
-                    getVelocity().y *= -1;
-
+                    //getVelocity().y *= -1;
                 }
             }
         }
