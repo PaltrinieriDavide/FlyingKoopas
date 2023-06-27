@@ -44,6 +44,7 @@ public class SpriteBouncing extends Sprite {
             if (spriteBouncing != this) {
                 if (intersects(spriteBouncing)){
                     getVelocity().x *= -1;
+                    //getVelocity().y *= -1;
                 }
             }
         }

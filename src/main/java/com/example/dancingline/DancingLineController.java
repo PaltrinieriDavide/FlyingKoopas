@@ -19,14 +19,16 @@ import javafx.geometry.Point2D;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.Pane;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.*;
-import javafx.stage.Screen;
-import javafx.stage.Stage;
+import javafx.scene.shape.Circle;
+import javafx.scene.shape.QuadCurve;
 
-import java.net.URL;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Random;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -47,13 +49,17 @@ public class DancingLineController {
 
     AnimationTimer timer;
     List<SpriteBouncing> bouncingSprites = new ArrayList<>();
-
-    /*Deque<Sprite> priorityCode = new ArrayDeque<>();
-    int itemNumber = 5;*/
+    private AudioAnalyzer audioAnalyzer;
 
 
 
     public void initialize() {
+        root.visibleProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue) {
+                // The anchor panel has been closed
+                audioAnalyzer.interrupt();
+            }
+        });
         onReset();
     }
 
@@ -103,6 +109,10 @@ public class DancingLineController {
         //root.getChildren().clear();
         root.getChildren().addAll(bouncingSprites);
         //root.getChildren().add(generateItem());
+
+        ExecutorService executorService = Executors.newFixedThreadPool(4); //ricordiamoci di definire correttamente il numero di thread
+        audioAnalyzer = new AudioAnalyzer();
+        executorService.submit(audioAnalyzer);
     }
 
     private SpriteBouncing generateBoncingSprite() {
@@ -120,17 +130,17 @@ public class DancingLineController {
         //RandomGenerator rnd = RandomGenerator.getDefault();
         PVector location = new PVector(rand.nextDouble(root.getPrefWidth()), rand.nextDouble(root.getPrefHeight()));
         PVector velocity = new PVector(rand.nextDouble() * SPRITE_MAX_SPEED / 2, rand.nextDouble() * SPRITE_MAX_SPEED);
-        PVector acceleration = new PVector(0, 0.5);
+        PVector acceleration = new PVector(0, 0.05);
 
         return new SpriteBouncing(view, location, velocity, acceleration);
     }
 
-    /*private Sprite generateItem(){
-        Image img = new Image(Objects.requireNonNull(getClass().getResourceAsStream("assets/pngegg.png")));
+    private Sprite generateItem(){
+        Image img = new Image(Objects.requireNonNull(getClass().getResourceAsStream("assets/item.png")));
         ImageView item = new ImageView();
         item.setImage(img);
-        item.setFitHeight(50);
-        item.setFitWidth(50);
+        item.setFitHeight(60);
+        item.setFitWidth(60);
         double x = 0, y=0, noise=0;
         boolean check = false;
         RandomGenerator rnd = RandomGenerator.getDefault();
@@ -149,7 +159,7 @@ public class DancingLineController {
         PVector location = new PVector(rnd.nextDouble() * root.getPrefWidth(), rnd.nextDouble() * root.getPrefHeight());
         PVector velocity = new PVector(0, 0);
         return new Sprite(item, location, velocity);
-    }*/
+    }
 
     private void initializeTimer() {
         if (timer != null) {
@@ -178,11 +188,39 @@ public class DancingLineController {
         call.updateItems(time);
 
         bouncingSprites.forEach(spriteBouncing -> spriteBouncing.update(quadCurve, bouncingSprites));
+        try {
+            Thread.sleep(10);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        System.out.println("volume: " + audioAnalyzer.getVolume());
+        if (audioAnalyzer.getVolume() > 80){
+            if (quadCurve.getControlY() < 200){
+                updateCurve(quadCurve.getControlX(), quadCurve.getControlY() - 20);
+            }
+
+        }
 
     }
     protected void updateCurve(double x1, double y1){
         quadCurve.setControlX(x1);
         quadCurve.setControlY(y1);
+    }
+
+    private void displayCurve(){
+        Point2D startCoords = quadCurve.localToParent(quadCurve.getStartX(), quadCurve.getStartY());
+        Point2D controlCoords = quadCurve.localToParent(quadCurve.getControlX(), quadCurve.getControlY());
+        Point2D endCoords = quadCurve.localToParent(quadCurve.getEndX(), quadCurve.getEndY());
+
+        for (double t = 0.0; t <= 1.0; t += 0.0001) {
+            double x = Math.pow(1 - t, 2) * startCoords.getX() +
+                    2 * (1 - t) * t * controlCoords.getX() +
+                    Math.pow(t, 2) * endCoords.getX();
+            double y = Math.pow(1 - t, 2) * startCoords.getY() +
+                    2 * (1 - t) * t * controlCoords.getY() +
+                    Math.pow(t, 2) * endCoords.getY();
+            System.out.println("curva -> X " + x + " Y " + y);
+        }
     }
 }
 
