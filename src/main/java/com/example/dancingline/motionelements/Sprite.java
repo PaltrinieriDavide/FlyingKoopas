@@ -1,11 +1,8 @@
 package com.example.dancingline.motionelements;
 
-import com.example.dancingline.SpriteBouncing;
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
-import javafx.scene.layout.*;
-
-import java.util.List;
+import javafx.scene.layout.Region;
 
 public class Sprite extends Region {
     PVector location;
@@ -110,7 +107,7 @@ public class Sprite extends Region {
                 '}';
     }
 
-    public void update(List<SpriteBouncing> bouncingSprites) {
+    public void update() {
         // update velocity and location
         velocity = velocity.add(acceleration);
         location = location.add(velocity);

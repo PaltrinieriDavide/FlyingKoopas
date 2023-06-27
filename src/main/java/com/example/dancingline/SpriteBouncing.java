@@ -30,7 +30,7 @@ public class SpriteBouncing extends Sprite {
     }
 
     public void update(List<SpriteBouncing> spriteBouncingList) {
-        super.update(spriteBouncingList);
+        super.update();
 
         reboundWalls();
 

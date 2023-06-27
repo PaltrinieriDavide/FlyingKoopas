@@ -89,8 +89,11 @@ public class DancingLineController {
 
         SpriteBouncing sb = new SpriteBouncing(item);
 
-        sb.setLocation(new PVector(sb.parentToLocal(x, y).getX(), sb.parentToLocal(x, y).getY()));
-        //sb.setLocation(new PVector(x,y));
+        //sb.setLocation(new PVector(sb.parentToLocal(x, y).getX(), sb.parentToLocal(x, y).getY()));
+        System.out.println(sb.parentToLocal(x, y).getX() + " " + sb.parentToLocal(x, y).getY());
+        System.out.println(x + " " + y);
+
+        sb.setLocation(new PVector(x,y));
         sb.setVelocity(new PVector(0,0));
         sb.setAcceleration(new PVector(0,0));
 
