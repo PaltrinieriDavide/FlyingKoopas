@@ -26,8 +26,8 @@ public class ChangingSceneController {
 
         scene = new Scene(root);
         stage.setScene(scene);
-        stage.setMaximized(true);
         stage.setResizable(false);
+        //stage.setMaximized(true);
         stage.setTitle("DancingLine");
         stage.show();
     }

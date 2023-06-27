@@ -31,7 +31,9 @@ public class SpriteBouncing extends Sprite {
 
     public void update(List<SpriteBouncing> spriteBouncingList) {
         super.update(spriteBouncingList);
+
         reboundWalls();
+
         //bounce with other balls
         for (SpriteBouncing spriteBouncing : spriteBouncingList) {
             if (spriteBouncing != this) {

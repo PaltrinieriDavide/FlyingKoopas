@@ -96,7 +96,18 @@ public class Sprite extends Region {
     }
 
     public void applyImpulseForce(PVector force) {
-        velocity = velocity.add(force.multiply(1 / mass));
+        velocity = velocity.add(force);
+    }
+
+    @Override
+    public String toString() {
+        return "Sprite{" +
+                "location=" + location +
+                ", velocity=" + velocity +
+                ", acceleration=" + acceleration +
+                ", mass=" + mass +
+                ", view=" + view +
+                '}';
     }
 
     public void update(List<SpriteBouncing> bouncingSprites) {

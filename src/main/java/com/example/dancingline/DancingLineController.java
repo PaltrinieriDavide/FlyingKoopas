@@ -1,28 +1,29 @@
 package com.example.dancingline;
 
 import com.example.dancingline.motionelements.PVector;
+import com.example.dancingline.motionelements.UtilsColor;
 import javafx.animation.AnimationTimer;
 import javafx.fxml.FXML;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.AnchorPane;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
+import javafx.scene.shape.Line;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 
 public class DancingLineController {
 
     public static double SPRITE_MAX_SPEED = 15;
-
     @FXML
-    private AnchorPane root;
-
+    private Line line;
+    @FXML
+    private Pane root;
+    Line force;
     AnimationTimer timer;
     List<SpriteBouncing> bouncingSprites = new ArrayList<>();
     List<WallSprite> wallSprites = new ArrayList<>();
@@ -33,52 +34,140 @@ public class DancingLineController {
     }
 
     void onReset() {
+
+        /*
+        root.widthProperty().addListener((obs, oldWidth, newWidth) -> {
+            double width = newWidth.doubleValue();
+            System.out.println("Larghezza pannello root: " + rootWidth);
+            rootWidth = width;
+        });
+
+        root.heightProperty().addListener((obs, oldHeight, newHeight) -> {
+            double height = newHeight.doubleValue();
+            System.out.println("Altezza pannello root: " + rootHeight);
+            rootHeight = height;
+        });
+         */
+
         initializeTimer();
         initializeObjects();
     }
 
     private void initializeObjects() {
-        root.setStyle("-fx-background-color: black;");
-        bouncingSprites.clear();
-        for (int i = 0; i < 50; i++) {
-            bouncingSprites.add(generateBoncingSprite());
-        }
         try {
             generateMap();
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         }
-        //root.getChildren().clear();
-        root.getChildren().addAll(bouncingSprites);
-        //root.getChildren().add(generateItem());
-    }
-
-    private SpriteBouncing generateBoncingSprite() {
-        Circle view = new Circle(10);
-        view.setStroke(Color.BLUEVIOLET);
-        view.setFill(Color.BLUEVIOLET.deriveColor(1, 1, 1, 1));
-        System.out.println(root.getHeight());
-        view.setTranslateX(view.getRadius());
-        view.setTranslateY(view.getRadius());
-
-        System.out.println( root.getPrefHeight()+ " " + root.getPrefWidth());
 
         Random rand = new Random();
+        bouncingSprites.clear();
 
-        //RandomGenerator rnd = RandomGenerator.getDefault();
-        PVector location = new PVector(rand.nextDouble(root.getPrefWidth()), rand.nextDouble(root.getPrefHeight()));
-        PVector velocity = new PVector(rand.nextDouble() * SPRITE_MAX_SPEED / 2, rand.nextDouble() * SPRITE_MAX_SPEED);
-        PVector acceleration = new PVector(0, 0.05);
+        System.out.println("ROOT: H " + root.getPrefHeight());
 
-        return new SpriteBouncing(view, location, velocity, acceleration);
+        line.setStartX(line.parentToLocal(0, root.getPrefHeight() * 0.9).getX());
+        line.setStartY(line.parentToLocal(0, root.getPrefHeight() * 0.9).getY());
+        line.setEndX(line.parentToLocal(root.getPrefWidth(), root.getPrefHeight() * 0.9).getX());
+        line.setEndY(line.parentToLocal(root.getPrefWidth(), root.getPrefHeight() * 0.9).getY());
+
+
+        for (int i = 0; i < 1; i++) {
+            bouncingSprites.add(generateKoopaGreen(root.getPrefWidth() / 2, line.localToParent(line.getStartX(), line.getStartY()).getY()));
+        }
+        root.getChildren().addAll(bouncingSprites);
+    }
+
+    private SpriteBouncing generateKoopaGreen(double x, double y) {
+        Image img = new Image(Objects.requireNonNull(getClass().getResourceAsStream("assets/koopaverde.png")));
+        ImageView item = new ImageView();
+        item.setImage(img);
+        item.setFitHeight(30);
+        item.setFitWidth(30);
+
+        item.setTranslateY(- 15);
+        item.setTranslateX(- 15);
+
+        SpriteBouncing sb = new SpriteBouncing(item);
+
+        sb.setLocation(new PVector(sb.parentToLocal(x, y).getX(), sb.parentToLocal(x, y).getY()));
+        //sb.setLocation(new PVector(x,y));
+        sb.setVelocity(new PVector(0,0));
+        sb.setAcceleration(new PVector(0,0));
+
+        PVector location = new PVector(x, y);
+        PVector velocity = new PVector(0,0);
+        PVector acceleration = new PVector(0, 0);
+
+        return sb;
+    }
+
+    private void initializeTimer() {
+        if (timer != null) {
+            timer.stop();
+        }
+        timer = new AnimationTimer() {
+            long delta;
+            int time = 0;
+            long lastFrameTime;
+            @Override
+            public void handle(long now) {
+                time++;
+                if(time == 501){
+                    time = 0;
+                }
+            }
+        };
+        timer.start();
+    }
+    private void mainLoop() {
+        for (int i = 0; i < bouncingSprites.size(); i++){
+            bouncingSprites.get(i).update(bouncingSprites);
+        }
+        //bouncingSprites.forEach(spriteBouncing -> spriteBouncing.update(bouncingSprites));
+    }
+    @FXML
+    void onMouseDragged(MouseEvent event) {
+        force.setEndX(event.getX());
+        force.setEndY(event.getY());
+        double magnitude = Math.hypot(force.getStartX() - force.getEndX(), force.getStartY() - force.getEndY());
+        force.setStroke(UtilsColor.getColorScale(0, 300, Color.GREEN.getHue(), Color.RED.getHue(), magnitude).deriveColor(1, 1, 1, 0.3));
+    }
+
+    @FXML
+    void onMousePressed(MouseEvent event) {
+
+        double startX = line.getStartX();
+        double startY = line.getStartY();
+        double endX = event.getX();
+        double endY = event.getY();
+
+        //double length = (new Point2D(startX, startY)).distance(endX, endY);
+
+        force = new Line(root.getPrefWidth() / 2, line.localToParent(line.getStartX(), line.getStartY()).getY(), event.getX(), event.getY());
+        force.setStrokeWidth(5);
+        root.getChildren().add(force);
+    }
+
+    @FXML
+    void onMouseReleased(MouseEvent event) {
+        Optional<SpriteBouncing> sprite = bouncingSprites.stream()
+                .filter(bs -> bs.intersects(line.getLayoutBounds()))
+                .findFirst();
+        if (sprite.isPresent()) {
+            System.out.println("HO TROVATO UNO SPRITE");
+            PVector impulse = new PVector(
+                    force.getEndX() - force.getStartX(),
+                    force.getStartY() - force.getEndY());
+            sprite.get().applyImpulseForce(impulse.multiply(0.2));
+        }
+        root.getChildren().removeAll(force);
     }
 
     private void generateMap() throws FileNotFoundException {
         int value;
-        List<SpriteBouncing> wallList = new ArrayList<>();
         Random rand = new Random();
-        Image imgWall = new Image(new FileInputStream("C:\\Users\\ricca\\IdeaProjects\\dancingLine\\src\\main\\resources\\com\\example\\dancingline\\assets\\wall.png"));
-        Image imgItem = new Image(new FileInputStream("C:\\Users\\ricca\\IdeaProjects\\dancingLine\\src\\main\\resources\\com\\example\\dancingline\\assets\\pngegg.png"));
+        Image imgWall = new Image(new FileInputStream("C:\\Users\\david\\IdeaProjects\\dancingLine\\src\\main\\resources\\com\\example\\dancingline\\assets\\wall.png"));
+        Image imgItem = new Image(new FileInputStream("C:\\Users\\david\\IdeaProjects\\dancingLine\\src\\main\\resources\\com\\example\\dancingline\\assets\\pngegg.png"));
         for(int j = 0; j<9; j++){
             for(int i = 0; i< 36; i++){
                 value=rand.nextInt(100);
@@ -95,7 +184,7 @@ public class DancingLineController {
                     wallPiece.setTranslateX(i*49.8);
                     wallPiece.setTranslateY(j*49.8);
                     root.getChildren().add(wallPiece);
-                    wallList.add(wallPiece);
+                    wallSprites.add(wallPiece);
                 }
                 else if(value<=10){
                     ImageView item2 = new ImageView();
@@ -119,60 +208,6 @@ public class DancingLineController {
             }
         }
 
-    }
-
-  /*  private Sprite generateItem(){
-        Image img = new Image(Objects.requireNonNull(getClass().getResourceAsStream("assets/item.png")));
-        ImageView item = new ImageView();
-        item.setImage(img);
-        item.setFitHeight(60);
-        item.setFitWidth(60);
-        double x = 0, y=0, noise=0;
-        boolean check = false;
-        RandomGenerator rnd = RandomGenerator.getDefault();
-        while(check == false){
-            noise = rnd.nextDouble();
-            x = rnd.nextDouble();
-            y = rnd.nextDouble();
-            if(y<0.6){
-                check = true;
-            }
-        }
-        //System.out.println("--" + x + "." + noise + "--" + root.getWidth());
-        //System.out.println("__" + y + "__" +root.getHeight());
-        item.setX((x+noise)*1000);
-        item.setY(y*1000);
-        PVector location = new PVector(rnd.nextDouble() * root.getPrefWidth(), rnd.nextDouble() * root.getPrefHeight());
-        PVector velocity = new PVector(0, 0);
-        return new Sprite(item, location, velocity);
-    }*/
-
-    private void initializeTimer() {
-        if (timer != null) {
-            timer.stop();
-        }
-        timer = new AnimationTimer() {
-            long delta;
-            int time = 0;
-            ItemsHandle call = new ItemsHandle(root);
-            long lastFrameTime;
-            @Override
-            public void handle(long now) {
-                mainLoop(time, call);
-                time++;
-                if(time == 501){
-                    time = 0;
-                }
-            }
-        };
-        timer.start();
-    }
-
-
-
-    private void mainLoop(int time, ItemsHandle call) {
-        //call.updateItems(time, wallSprites);
-        bouncingSprites.forEach(spriteBouncing -> spriteBouncing.update(bouncingSprites));
     }
 }
 
