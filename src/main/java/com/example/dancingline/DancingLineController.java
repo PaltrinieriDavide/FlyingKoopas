@@ -10,6 +10,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -26,6 +27,7 @@ public class DancingLineController {
 
     AnimationTimer timer;
     List<SpriteBouncing> bouncingSprites = new ArrayList<>();
+    List<SpriteBouncing> wallSprites = new ArrayList<>();
 
     public void initialize() {
         onReset();
@@ -41,6 +43,11 @@ public class DancingLineController {
         bouncingSprites.clear();
         for (int i = 0; i < 50; i++) {
             bouncingSprites.add(generateBoncingSprite());
+        }
+        try {
+            wallSprites=mapSetup.generateMap(root);
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
         }
         //root.getChildren().clear();
         root.getChildren().addAll(bouncingSprites);

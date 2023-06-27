@@ -109,6 +109,14 @@ public class Sprite extends Region {
 
     }
 
+    public void update(PVector velocity) {
+        // update velocity and location
+        location = location.add(velocity);
+        // update position on parent component
+        setTranslateX(location.x);
+        setTranslateY(location.y);
+    }
+
     public boolean intersects(Sprite other) {
         return getBoundsInParent().intersects(other.getBoundsInParent());
     }

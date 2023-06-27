@@ -52,30 +52,26 @@ public class ItemsHandle {
         double value = rand.nextDouble(1);
         // System.out.println("++++" + value);
         //System.out.println("**** " + priorityDeque.size());
-        if (value >0.996 && priorityDeque.size() <5){
+        if (value >0.990 && priorityDeque.size() <5){
             Sprite a = generateItem();
             priorityDeque.addFirst(a);
             root.getChildren().add(a);
         }
-        if((time == 500 && priorityDeque.size()>0) || (time == 500 && priorityDeque.size() >= 5)){
+        if(time == 500 && priorityDeque.size() > 0){
             //root.getChildren().remove(priorityDeque.peekLast());
             Sprite es = priorityDeque.removeLast();
-            //PVector vec = new PVector(rand.nextDouble(1800), rand.nextDouble(600));
-            //System.out.println("###" + vec);
-            //es.setLocation(vec);
-            System.out.println(root.getPrefWidth() + "||||" + root.getPrefHeight());
-            es.setTranslateX(rand.nextDouble(root.getPrefWidth()));
-            es.setTranslateY(rand.nextDouble( root.getPrefHeight()));
+            PVector vec = new PVector(rand.nextDouble(1800), rand.nextDouble(600));
+
+            es.update(vec);
+
             priorityDeque.addFirst(es);
-
-
         }
 
         else if(priorityDeque.size() >= 6){
             root.getChildren().remove(priorityDeque.peekLast());
             priorityDeque.removeLast();
         }
-        System.out.println("time: " + time);
+        //System.out.println("time: " + time);
     }
 
 
