@@ -19,6 +19,7 @@ public class DancingLineApplication extends Application {
         Scene scene = new Scene(root.load());
         stage.setScene(scene);
         stage.setTitle("DancingLine");
+        stage.setResizable(false);
         stage.show();
     }
 }
