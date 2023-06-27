@@ -74,6 +74,7 @@ public class DancingLineController {
         for (int i = 0; i < 1; i++) {
             bouncingSprites.add(generateKoopaGreen(root.getPrefWidth() / 2, line.localToParent(line.getStartX(), line.getStartY()).getY()));
         }
+        //System.out.println("LOCATION: " + bouncingSprites.get(0).getLocation());
         root.getChildren().addAll(bouncingSprites);
     }
 
@@ -118,6 +119,7 @@ public class DancingLineController {
                 if(time == 501){
                     time = 0;
                 }
+                mainLoop();
             }
         };
         timer.start();
@@ -125,6 +127,17 @@ public class DancingLineController {
     private void mainLoop() {
         for (int i = 0; i < bouncingSprites.size(); i++){
             bouncingSprites.get(i).update(bouncingSprites);
+            for (int j = 0; j < wallSprites.size(); j++){
+                if (bouncingSprites.get(i).getBoundsInParent().intersects(wallSprites.get(j).getBoundsInParent())){
+                    bouncingSprites.get(i).setVelocity( new PVector(
+                            bouncingSprites.get(i).getVelocity().x,
+                            - bouncingSprites.get(i).getVelocity().y)
+                    );
+                    root.getChildren().remove(wallSprites.get(j));
+                    wallSprites.remove(j);
+                    break;
+                }
+            }
         }
         //bouncingSprites.forEach(spriteBouncing -> spriteBouncing.update(bouncingSprites));
     }
@@ -154,14 +167,14 @@ public class DancingLineController {
     @FXML
     void onMouseReleased(MouseEvent event) {
         Optional<SpriteBouncing> sprite = bouncingSprites.stream()
-                .filter(bs -> bs.intersects(line.getLayoutBounds()))
+                .filter(bs -> bs.getBoundsInParent().intersects(line.getBoundsInParent()))
                 .findFirst();
         if (sprite.isPresent()) {
-            System.out.println("HO TROVATO UNO SPRITE");
+            System.out.println("sprite trovata in onMouseReleased");
             PVector impulse = new PVector(
                     force.getEndX() - force.getStartX(),
                     force.getStartY() - force.getEndY());
-            sprite.get().applyImpulseForce(impulse.multiply(0.2));
+            sprite.get().applyImpulseForce(impulse.multiply(0.05));
         }
         root.getChildren().removeAll(force);
     }
