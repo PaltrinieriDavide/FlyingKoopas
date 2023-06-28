@@ -28,6 +28,7 @@ public class DancingLineController {
     List<SpriteBouncing> bouncingSprites = new ArrayList<>();
     List<WallSprite> wallSprites = new ArrayList<>();
     List<QuestionMarkSprite> markSprites = new ArrayList<>();
+   // List<Boolean> check;
 
     public void initialize() {
         onReset();
@@ -76,6 +77,8 @@ public class DancingLineController {
         }
         //System.out.println("LOCATION: " + bouncingSprites.get(0).getLocation());
         root.getChildren().addAll(bouncingSprites);
+        //check = new ArrayList<>(wallSprites.size());
+        //Collections.fill(check, false);
     }
 
     private SpriteBouncing generateKoopaGreen(double x, double y) {
@@ -91,8 +94,8 @@ public class DancingLineController {
         SpriteBouncing sb = new SpriteBouncing(item);
 
         //sb.setLocation(new PVector(sb.parentToLocal(x, y).getX(), sb.parentToLocal(x, y).getY()));
-        System.out.println(sb.parentToLocal(x, y).getX() + " " + sb.parentToLocal(x, y).getY());
-        System.out.println(x + " " + y);
+        //System.out.println(sb.parentToLocal(x, y).getX() + " " + sb.parentToLocal(x, y).getY());
+        //System.out.println(x + " " + y);
 
         sb.setLocation(new PVector(x,y));
         sb.setVelocity(new PVector(0,0));
@@ -127,17 +130,36 @@ public class DancingLineController {
     private void mainLoop() {
         for (int i = 0; i < bouncingSprites.size(); i++){
             bouncingSprites.get(i).update(bouncingSprites);
-            for (int j = 0; j < wallSprites.size(); j++){
-                if (bouncingSprites.get(i).getBoundsInParent().intersects(wallSprites.get(j).getBoundsInParent())){
+            for (int j = 0; j < Math.max(wallSprites.size(), markSprites.size()); j++){
+                if (j<wallSprites.size() && bouncingSprites.get(i).getBoundsInParent().intersects(wallSprites.get(j).getBoundsInParent())){
                     bouncingSprites.get(i).setVelocity( new PVector(
-                            bouncingSprites.get(i).getVelocity().x,
+                             bouncingSprites.get(i).getVelocity().x,
                             - bouncingSprites.get(i).getVelocity().y)
                     );
                     root.getChildren().remove(wallSprites.get(j));
                     wallSprites.remove(j);
                     break;
+                   /* wallSprites.get(j).decreseBumpsNumber();
+                    check.set(j, true);
+                    System.out.println(wallSprites.get(j) + "----" + wallSprites.get(j).getBumpsNumber());*/
                 }
+                else if(j < markSprites.size() && bouncingSprites.get(i).getBoundsInParent().intersects(markSprites.get(j).getBoundsInParent())){
+                    SpriteBouncing nuovo = generateKoopaGreen(1000, 600);
+                    bouncingSprites.add(nuovo);
+                    root.getChildren().add(nuovo);
+                }
+               /*if(wallSprites.get(j).getBumpsNumber() == 0){
+
+                }*/
             }
+           /* for(int j = 0; j<markSprites.size(); j++){
+                if(bouncingSprites.get(i).getBoundsInParent().intersects(markSprites.get(j).getBoundsInParent())){
+                    SpriteBouncing nuovo = generateKoopaGreen(bouncingSprites.get(j).getLocation().x, bouncingSprites.get(j).getLocation().y);
+                    bouncingSprites.add(nuovo);
+                    root.getChildren().add(nuovo);
+
+                }
+            }*/
         }
         //bouncingSprites.forEach(spriteBouncing -> spriteBouncing.update(bouncingSprites));
     }
@@ -182,12 +204,15 @@ public class DancingLineController {
     private void generateMap() throws FileNotFoundException {
         int value;
         Random rand = new Random();
-        Image imgWall = new Image(new FileInputStream("C:\\Users\\david\\IdeaProjects\\dancingLine\\src\\main\\resources\\com\\example\\dancingline\\assets\\wall.png"));
-        Image imgItem = new Image(new FileInputStream("C:\\Users\\david\\IdeaProjects\\dancingLine\\src\\main\\resources\\com\\example\\dancingline\\assets\\pngegg.png"));
+        //Image imgWall = new Image(new FileInputStream("C:\\Users\\ricca\\IdeaProjects\\dancingLine\\src\\main\\resources\\com\\example\\dancingline\\assets\\wall.png"));
+        //Image imgItem = new Image(new FileInputStream("C:\\Users\\ricca\\IdeaProjects\\dancingLine\\src\\main\\resources\\com\\example\\dancingline\\assets\\questionMark.png"));
+        Image imgWall = new Image(Objects.requireNonNull(getClass().getResourceAsStream("assets/wall.png")));
+        Image imgItem = new Image(Objects.requireNonNull(getClass().getResourceAsStream("assets/questionMark.png")));
+
         for(int j = 0; j<9; j++){
             for(int i = 0; i< 36; i++){
                 value=rand.nextInt(100);
-                if(value>=80){
+                if(value>=70){
                     ImageView item = new ImageView();
                     item.setImage(imgWall);
                     item.setFitHeight(49.8);
@@ -202,7 +227,7 @@ public class DancingLineController {
                     root.getChildren().add(wallPiece);
                     wallSprites.add(wallPiece);
                 }
-                else if(value<=10){
+                else if(value<=5){
                     ImageView item2 = new ImageView();
                     item2.setImage(imgItem);
                     item2.setFitHeight(49.8);
