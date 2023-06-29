@@ -73,7 +73,7 @@ public class DancingLineController {
 
 
         for (int i = 0; i < 5; i++) {
-            bouncingSprites.add(generateKoopaGreen(root.getPrefWidth() / 2, line.localToParent(line.getStartX(), line.getStartY()).getY()));
+            bouncingSprites.add(generateKoopaGreen(root.getPrefWidth() / 2, line.localToParent(line.getStartX(), line.getStartY()).getY(), "green"));
         }
         //System.out.println("LOCATION: " + bouncingSprites.get(0).getLocation());
         root.getChildren().addAll(bouncingSprites);
@@ -83,15 +83,9 @@ public class DancingLineController {
         //Collections.fill(check, false);
     }
 
-    private Koopa generateKoopaGreen(double x, double y) {
+    private Koopa generateKoopaGreen(double x, double y, String type) {
         Image img = new Image(Objects.requireNonNull(getClass().getResourceAsStream("assets/koopaverde.png")));
-        ImageView item = new ImageView();
-        item.setImage(img);
-        item.setFitHeight(30);
-        item.setFitWidth(30);
-
-        item.setTranslateY(- 15);
-        item.setTranslateX(- 15);
+        ImageView item = generateItemKoopa(type);
 
         Koopa koopa = new Koopa(item, "green");
 
