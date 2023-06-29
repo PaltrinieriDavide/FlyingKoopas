@@ -25,9 +25,10 @@ public class DancingLineController {
     private Pane root;
     Line force;
     AnimationTimer timer;
-    List<SpriteBouncing> bouncingSprites = new ArrayList<>();
+    List<Koopa> bouncingSprites = new ArrayList<>();
     List<WallSprite> wallSprites = new ArrayList<>();
     List<QuestionMarkSprite> markSprites = new ArrayList<>();
+    Deque<Koopa> koopasDisplayed = new ArrayDeque<>();
    // List<Boolean> check;
 
     public void initialize() {
@@ -72,16 +73,18 @@ public class DancingLineController {
         line.setEndY(line.parentToLocal(root.getPrefWidth(), root.getPrefHeight() * 0.9).getY());
 
 
-        for (int i = 0; i < 1; i++) {
+        for (int i = 0; i < 5; i++) {
             bouncingSprites.add(generateKoopaGreen(root.getPrefWidth() / 2, line.localToParent(line.getStartX(), line.getStartY()).getY()));
         }
         //System.out.println("LOCATION: " + bouncingSprites.get(0).getLocation());
         root.getChildren().addAll(bouncingSprites);
+        koopasDisplayed.addAll(bouncingSprites);
+
         //check = new ArrayList<>(wallSprites.size());
         //Collections.fill(check, false);
     }
 
-    private SpriteBouncing generateKoopaGreen(double x, double y) {
+    private Koopa generateKoopaGreen(double x, double y) {
         Image img = new Image(Objects.requireNonNull(getClass().getResourceAsStream("assets/koopaverde.png")));
         ImageView item = new ImageView();
         item.setImage(img);
@@ -91,21 +94,22 @@ public class DancingLineController {
         item.setTranslateY(- 15);
         item.setTranslateX(- 15);
 
-        SpriteBouncing sb = new SpriteBouncing(item);
+        Koopa koopa = new Koopa(item, "green");
 
         //sb.setLocation(new PVector(sb.parentToLocal(x, y).getX(), sb.parentToLocal(x, y).getY()));
-        //System.out.println(sb.parentToLocal(x, y).getX() + " " + sb.parentToLocal(x, y).getY());
-        //System.out.println(x + " " + y);
+        System.out.println(koopa.parentToLocal(x, y).getX() + " " + koopa.parentToLocal(x, y).getY());
+        System.out.println(x + " " + y);
 
-        sb.setLocation(new PVector(x,y));
-        sb.setVelocity(new PVector(0,0));
-        sb.setAcceleration(new PVector(0,0));
+        koopa.setLocation(new PVector(x,y));
+        koopa.setVelocity(new PVector(0,0));
+        koopa.setAcceleration(new PVector(0,0));
 
         PVector location = new PVector(x, y);
         PVector velocity = new PVector(0,0);
         PVector acceleration = new PVector(0, 0);
 
-        return sb;
+        return koopa;
+
     }
 
     private void initializeTimer() {
@@ -144,7 +148,8 @@ public class DancingLineController {
                     System.out.println(wallSprites.get(j) + "----" + wallSprites.get(j).getBumpsNumber());*/
                 }
                 else if(j < markSprites.size() && bouncingSprites.get(i).getBoundsInParent().intersects(markSprites.get(j).getBoundsInParent())){
-                    SpriteBouncing nuovo = generateKoopaGreen(1000, 600);
+
+                    Koopa nuovo = generateKoopaGreen(1000, 600);
                     bouncingSprites.add(nuovo);
                     root.getChildren().add(nuovo);
                 }
@@ -188,17 +193,18 @@ public class DancingLineController {
 
     @FXML
     void onMouseReleased(MouseEvent event) {
-        Optional<SpriteBouncing> sprite = bouncingSprites.stream()
+        Optional<Koopa> sprite = bouncingSprites.stream()
                 .filter(bs -> bs.getBoundsInParent().intersects(line.getBoundsInParent()))
                 .findFirst();
         if (sprite.isPresent()) {
             System.out.println("sprite trovata in onMouseReleased");
             PVector impulse = new PVector(
                     force.getEndX() - force.getStartX(),
-                    force.getStartY() - force.getEndY());
+                    force.getEndY() - force.getStartY());
             sprite.get().applyImpulseForce(impulse.multiply(0.05));
         }
         root.getChildren().removeAll(force);
+
     }
 
     private void generateMap() throws FileNotFoundException {

@@ -29,19 +29,9 @@ public class SpriteBouncing extends Sprite {
         super(view, location, velocity, acceleration, mass);
     }
 
-    public void update(List<SpriteBouncing> spriteBouncingList) {
+    public void update() {
         super.update();
-
         reboundWalls();
-
-        //bounce with other balls
-        for (SpriteBouncing spriteBouncing : spriteBouncingList) {
-            if (spriteBouncing != this) {
-                if (intersects(spriteBouncing)){
-                    getVelocity().x *= -1;
-                }
-            }
-        }
     }
 
     public void reboundWalls() {
