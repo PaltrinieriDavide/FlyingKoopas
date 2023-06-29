@@ -149,9 +149,24 @@ public class DancingLineController {
                 }
                 else if(j < markSprites.size() && bouncingSprites.get(i).getBoundsInParent().intersects(markSprites.get(j).getBoundsInParent())){
 
-                    Koopa nuovo = generateKoopaGreen(1000, 600);
-                    bouncingSprites.add(nuovo);
-                    root.getChildren().add(nuovo);
+                    PVector vel = new PVector( - bouncingSprites.get(i).getVelocity().x, bouncingSprites.get(i).getVelocity().y);
+                    Image img = new Image(Objects.requireNonNull(getClass().getResourceAsStream("assets/koopaverde.png")));
+                    ImageView item = new ImageView();
+                    item.setImage(img);
+                    item.setFitHeight(30);
+                    item.setFitWidth(30);
+
+                    item.setTranslateY(- 15);
+                    item.setTranslateX(- 15);
+
+                    Koopa n = new Koopa(item, bouncingSprites.get(i).getLocation(), vel, bouncingSprites.get(i).getAcceleration(), bouncingSprites.get(i).getType());
+                    //Koopa nuovo = bouncingSprites.get(i);
+                    //nuovo.setVelocity(new PVector(- nuovo.getVelocity().x, nuovo.getVelocity().y));
+                    bouncingSprites.add(n);
+                    root.getChildren().add(n);
+                    root.getChildren().remove(markSprites.get(j));
+                    markSprites.remove(j);
+
                 }
                /*if(wallSprites.get(j).getBumpsNumber() == 0){
 
@@ -218,7 +233,7 @@ public class DancingLineController {
         for(int j = 0; j<9; j++){
             for(int i = 0; i< 36; i++){
                 value=rand.nextInt(100);
-                if(value>=70){
+                if(value>=60){
                     ImageView item = new ImageView();
                     item.setImage(imgWall);
                     item.setFitHeight(49.8);
@@ -233,7 +248,7 @@ public class DancingLineController {
                     root.getChildren().add(wallPiece);
                     wallSprites.add(wallPiece);
                 }
-                else if(value<=5){
+                else if(value<=3){
                     ImageView item2 = new ImageView();
                     item2.setImage(imgItem);
                     item2.setFitHeight(49.8);
