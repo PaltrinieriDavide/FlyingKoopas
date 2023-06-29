@@ -41,7 +41,8 @@ public class Koopa extends SpriteBouncing {
     public void update(List<Koopa> list) {
         super.update();
 
-        //bounce with other balls
+        //bounce with other
+        /*
         for (Koopa koopa : list) {
             if (koopa != this) {
                 if (intersects(koopa)) {
@@ -49,5 +50,6 @@ public class Koopa extends SpriteBouncing {
                 }
             }
         }
+         */
     }
 }

@@ -4,16 +4,15 @@ import com.example.dancingline.motionelements.PVector;
 import com.example.dancingline.motionelements.UtilsColor;
 import javafx.animation.AnimationTimer;
 import javafx.fxml.FXML;
-import javafx.geometry.Point2D;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
-import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import javafx.geometry.Point2D;
 
 import java.io.FileNotFoundException;
 import java.util.*;
@@ -184,56 +183,19 @@ public class DancingLineController {
 
             for (int j = 0; j < Math.max(wallSprites.size(), markSprites.size()); j++){
                 if (j < wallSprites.size() && koopasDisplayed.get(i).getBoundsInParent().intersects(wallSprites.get(j).getBoundsInParent())){
-                    switch (koopasDisplayed.get(i).getType()){
-                        case "green":
-                            koopasDisplayed.get(i).setVelocity( new PVector(
-                                    koopasDisplayed.get(i).getVelocity().x,
-                                    - koopasDisplayed.get(i).getVelocity().y)
-                            );
-                            root.getChildren().remove(wallSprites.get(j));
-                            wallSprites.remove(j);
-                            break;
-                        case "red":
-                            root.getChildren().remove(wallSprites.get(j));
-                            wallSprites.remove(j);
-                            break;
+                    koopasDisplayed.get(i).setVelocity( new PVector(
+                            - koopasDisplayed.get(i).getVelocity().x,
+                            - koopasDisplayed.get(i).getVelocity().y)
+                    );
 
-
-                            //NON CORRETTO
-                        case "blue":
-                            Point2D koopaLocation = koopasDisplayed.get(i).localToParent(koopasDisplayed.get(i).getLocation().x, koopasDisplayed.get(i).getLocation().y);
-                            Rectangle rectangle = new Rectangle(
-                                    koopaLocation.getX(),
-                                    koopaLocation.getY(),
-                                    70, 70);
-                            rectangle.setFill(Color.ORANGE);
-                            root.getChildren().add(rectangle);
-                            for (WallSprite ws:wallSprites) {
-                                if (rectangle.getBoundsInParent().intersects(ws.getBoundsInParent())){
-                                    root.getChildren().remove(wallSprites.get(j));
-                                    wallSprites.remove(j);
-                                }
-                            }
-                            for (QuestionMarkSprite qms:markSprites) {
-                                if (rectangle.getBoundsInParent().intersects(qms.getBoundsInParent())){
-                                    root.getChildren().remove(markSprites.get(j));
-                                    markSprites.remove(j);
-                                }
-                            }
-                            koopasDisplayed.get(i).setVelocity( new PVector(
-                                    koopasDisplayed.get(i).getVelocity().x,
-                                    - koopasDisplayed.get(i).getVelocity().y)
-                            );
-                            //root.getChildren().remove(rectangle);
-                            break;
-                        default: break;
-                    }
+                    root.getChildren().remove(wallSprites.get(j));
+                    wallSprites.remove(j);
                     break;
                 }
                 else if(j < markSprites.size() && koopasDisplayed.get(i).getBoundsInParent().intersects(markSprites.get(j).getBoundsInParent())){
                     PVector vel = new PVector(koopasDisplayed.get(i).getVelocity().x, koopasDisplayed.get(i).getVelocity().y);
                     koopasDisplayed.get(i).setVelocity( new PVector(
-                            koopasDisplayed.get(i).getVelocity().x,
+                            - koopasDisplayed.get(i).getVelocity().x,
                             - koopasDisplayed.get(i).getVelocity().y)
                     );
 
@@ -245,7 +207,7 @@ public class DancingLineController {
                         case 1 ->
                                 new Koopa(generateItemKoopa("red"), koopasDisplayed.get(i).getLocation(), vel, koopasDisplayed.get(i).getAcceleration(), "red");
                         case 2 ->
-                                new Koopa(generateItemKoopa("blue"), koopasDisplayed.get(i).getLocation(), vel, koopasDisplayed.get(i).getAcceleration(), "blue");
+                                new Koopa(generateItemKoopa("blue"), koopasDisplayed.get(i).getLocation(), vel.multiply(2), koopasDisplayed.get(i).getAcceleration(), "blue");
                         default ->
                                 new Koopa(generateItemKoopa("green"), koopasDisplayed.get(i).getLocation(), vel, koopasDisplayed.get(i).getAcceleration(), "green");
                     };
@@ -317,7 +279,19 @@ public class DancingLineController {
             PVector impulse = new PVector(
                     force.getEndX() - force.getStartX(),
                     force.getEndY() - force.getStartY());
-            sprite.get().applyImpulseForce(impulse.multiply(0.009));
+            double distance = (new Point2D(force.getStartX(), force.getStartY())).distance(new Point2D(force.getEndX(), force.getEndY()));
+            System.out.println("distance: " + distance);
+            if (distance > 60){
+                if(sprite.get().getType().equals("blue")){
+                    sprite.get().applyImpulseForce(impulse.multiply(0.1));
+                }else{
+                    sprite.get().applyImpulseForce(impulse.multiply(0.009));
+                }
+            }else{
+                koopasDisplayed.remove(sprite);
+                //koopasNotDisplayed.addFirst(sprite);
+                root.getChildren().remove(sprite);
+            }
         }
         root.getChildren().removeAll(force);
     }
