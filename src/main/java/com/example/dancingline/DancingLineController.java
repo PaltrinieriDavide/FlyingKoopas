@@ -11,7 +11,6 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.*;
 
@@ -143,43 +142,22 @@ public class DancingLineController {
                     root.getChildren().remove(wallSprites.get(j));
                     wallSprites.remove(j);
                     break;
-                   /* wallSprites.get(j).decreseBumpsNumber();
-                    check.set(j, true);
-                    System.out.println(wallSprites.get(j) + "----" + wallSprites.get(j).getBumpsNumber());*/
                 }
                 else if(j < markSprites.size() && bouncingSprites.get(i).getBoundsInParent().intersects(markSprites.get(j).getBoundsInParent())){
-
-                    PVector vel = new PVector( - bouncingSprites.get(i).getVelocity().x, bouncingSprites.get(i).getVelocity().y);
-                    Image img = new Image(Objects.requireNonNull(getClass().getResourceAsStream("assets/koopaverde.png")));
-                    ImageView item = new ImageView();
-                    item.setImage(img);
-                    item.setFitHeight(30);
-                    item.setFitWidth(30);
-
-                    item.setTranslateY(- 15);
-                    item.setTranslateX(- 15);
-
-                    Koopa n = new Koopa(item, bouncingSprites.get(i).getLocation(), vel, bouncingSprites.get(i).getAcceleration(), bouncingSprites.get(i).getType());
+                    PVector vel = new PVector(bouncingSprites.get(i).getVelocity().x, bouncingSprites.get(i).getVelocity().y);
+                    bouncingSprites.get(i).setVelocity( new PVector(
+                            bouncingSprites.get(i).getVelocity().x,
+                            - bouncingSprites.get(i).getVelocity().y)
+                    );
+                    Koopa n = new Koopa(generateItemKoopa("green"), bouncingSprites.get(i).getLocation(), vel, bouncingSprites.get(i).getAcceleration(), bouncingSprites.get(i).getType());
                     //Koopa nuovo = bouncingSprites.get(i);
                     //nuovo.setVelocity(new PVector(- nuovo.getVelocity().x, nuovo.getVelocity().y));
                     bouncingSprites.add(n);
                     root.getChildren().add(n);
                     root.getChildren().remove(markSprites.get(j));
                     markSprites.remove(j);
-
                 }
-               /*if(wallSprites.get(j).getBumpsNumber() == 0){
-
-                }*/
             }
-           /* for(int j = 0; j<markSprites.size(); j++){
-                if(bouncingSprites.get(i).getBoundsInParent().intersects(markSprites.get(j).getBoundsInParent())){
-                    SpriteBouncing nuovo = generateKoopaGreen(bouncingSprites.get(j).getLocation().x, bouncingSprites.get(j).getLocation().y);
-                    bouncingSprites.add(nuovo);
-                    root.getChildren().add(nuovo);
-
-                }
-            }*/
         }
         //bouncingSprites.forEach(spriteBouncing -> spriteBouncing.update(bouncingSprites));
     }
@@ -216,10 +194,9 @@ public class DancingLineController {
             PVector impulse = new PVector(
                     force.getEndX() - force.getStartX(),
                     force.getEndY() - force.getStartY());
-            sprite.get().applyImpulseForce(impulse.multiply(0.05));
+            sprite.get().applyImpulseForce(impulse.multiply(0.005));
         }
         root.getChildren().removeAll(force);
-
     }
 
     private void generateMap() throws FileNotFoundException {
@@ -259,7 +236,7 @@ public class DancingLineController {
 
                     QuestionMarkSprite questionMark = new QuestionMarkSprite(rand.nextInt(3)+1, item2, location, velocity);
 
-                    System.out.println("222  " + questionMark.getType());
+                    //System.out.println("222  " + questionMark.getType());
 
                     questionMark.setTranslateX(i*49.8);
                     questionMark.setTranslateY(j*49.8);
@@ -269,7 +246,31 @@ public class DancingLineController {
 
             }
         }
+    }
 
+    public ImageView generateItemKoopa(String type){
+        Image img;
+        switch(type){
+            case "green":
+                img = new Image(Objects.requireNonNull(getClass().getResourceAsStream("assets/koopaverde.png")));
+                break;
+            case "red":
+                img = new Image(Objects.requireNonNull(getClass().getResourceAsStream("assets/kooparosso.png")));
+                break;
+            case "blue":
+                img = new Image(Objects.requireNonNull(getClass().getResourceAsStream("assets/koopablue.png")));
+            default:
+                img = new Image(Objects.requireNonNull(getClass().getResourceAsStream("assets/koopaverde.png")));
+        }
+
+        ImageView item = new ImageView();
+        item.setImage(img);
+        item.setFitHeight(30);
+        item.setFitWidth(30);
+
+        item.setTranslateY(- 15);
+        item.setTranslateX(- 15);
+        return item;
     }
 }
 
