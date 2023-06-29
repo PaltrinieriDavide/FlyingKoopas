@@ -24,11 +24,10 @@ public class DancingLineController {
     private Pane root;
     Line force;
     AnimationTimer timer;
-    List<Koopa> bouncingSprites = new ArrayList<>();
+    List<Koopa> koopasDisplayed = new ArrayList<>();
     List<WallSprite> wallSprites = new ArrayList<>();
     List<QuestionMarkSprite> markSprites = new ArrayList<>();
-    Deque<Koopa> koopasDisplayed = new ArrayDeque<>();
-   // List<Boolean> check;
+    Deque<Koopa> koopasNotDisplayed = new ArrayDeque<>();
 
     public void initialize() {
         onReset();
@@ -62,28 +61,25 @@ public class DancingLineController {
         }
 
         Random rand = new Random();
-        bouncingSprites.clear();
+        koopasDisplayed.clear();
 
         System.out.println("ROOT: H " + root.getPrefHeight());
 
-        line.setStartX(line.parentToLocal(0, root.getPrefHeight() * 0.9).getX());
-        line.setStartY(line.parentToLocal(0, root.getPrefHeight() * 0.9).getY());
-        line.setEndX(line.parentToLocal(root.getPrefWidth(), root.getPrefHeight() * 0.9).getX());
-        line.setEndY(line.parentToLocal(root.getPrefWidth(), root.getPrefHeight() * 0.9).getY());
+        line.setStartX(line.parentToLocal(0, root.getPrefHeight() * 0.95).getX());
+        line.setStartY(line.parentToLocal(0, root.getPrefHeight() * 0.95).getY());
+        line.setEndX(line.parentToLocal(root.getPrefWidth(), root.getPrefHeight() * 0.95).getX());
+        line.setEndY(line.parentToLocal(root.getPrefWidth(), root.getPrefHeight() * 0.95).getY());
 
 
-        for (int i = 0; i < 5; i++) {
-            bouncingSprites.add(generateKoopaGreen(root.getPrefWidth() / 2, line.localToParent(line.getStartX(), line.getStartY()).getY(), "green"));
+        for (int i = 0; i < 1; i++) {
+            Koopa k = generateKoopa(root.getPrefWidth() / 2, line.localToParent(line.getStartX(), line.getStartY()).getY() - 60, "green");
+            //koopasDisplayed.add(k);
+            koopasNotDisplayed.add(k);
         }
-        //System.out.println("LOCATION: " + bouncingSprites.get(0).getLocation());
-        root.getChildren().addAll(bouncingSprites);
-        koopasDisplayed.addAll(bouncingSprites);
-
-        //check = new ArrayList<>(wallSprites.size());
-        //Collections.fill(check, false);
+        //root.getChildren().addAll(koopasDisplayed);
     }
 
-    private Koopa generateKoopaGreen(double x, double y, String type) {
+    private Koopa generateKoopa(double x, double y, String type) {
         Image img = new Image(Objects.requireNonNull(getClass().getResourceAsStream("assets/koopaverde.png")));
         ImageView item = generateItemKoopa(type);
 
@@ -125,33 +121,42 @@ public class DancingLineController {
         timer.start();
     }
     private void mainLoop() {
-        for (int i = 0; i < bouncingSprites.size(); i++){
-            bouncingSprites.get(i).update(bouncingSprites);
+        for (int i = 0; i < koopasDisplayed.size(); i++){
+
+            koopasDisplayed.get(i).update(koopasDisplayed);
+
             for (int j = 0; j < Math.max(wallSprites.size(), markSprites.size()); j++){
-                if (j<wallSprites.size() && bouncingSprites.get(i).getBoundsInParent().intersects(wallSprites.get(j).getBoundsInParent())){
-                    bouncingSprites.get(i).setVelocity( new PVector(
-                             bouncingSprites.get(i).getVelocity().x,
-                            - bouncingSprites.get(i).getVelocity().y)
+                if (j < wallSprites.size() && koopasDisplayed.get(i).getBoundsInParent().intersects(wallSprites.get(j).getBoundsInParent())){
+                    koopasDisplayed.get(i).setVelocity( new PVector(
+                            koopasDisplayed.get(i).getVelocity().x,
+                            - koopasDisplayed.get(i).getVelocity().y)
                     );
                     root.getChildren().remove(wallSprites.get(j));
                     wallSprites.remove(j);
                     break;
                 }
-                else if(j < markSprites.size() && bouncingSprites.get(i).getBoundsInParent().intersects(markSprites.get(j).getBoundsInParent())){
-                    PVector vel = new PVector(bouncingSprites.get(i).getVelocity().x, bouncingSprites.get(i).getVelocity().y);
-                    bouncingSprites.get(i).setVelocity( new PVector(
-                            bouncingSprites.get(i).getVelocity().x,
-                            - bouncingSprites.get(i).getVelocity().y)
+                else if(j < markSprites.size() && koopasDisplayed.get(i).getBoundsInParent().intersects(markSprites.get(j).getBoundsInParent())){
+                    PVector vel = new PVector(koopasDisplayed.get(i).getVelocity().x, koopasDisplayed.get(i).getVelocity().y);
+                    koopasDisplayed.get(i).setVelocity( new PVector(
+                            koopasDisplayed.get(i).getVelocity().x,
+                            - koopasDisplayed.get(i).getVelocity().y)
                     );
-                    Koopa n = new Koopa(generateItemKoopa("green"), bouncingSprites.get(i).getLocation(), vel, bouncingSprites.get(i).getAcceleration(), bouncingSprites.get(i).getType());
+                    Koopa n = new Koopa(generateItemKoopa("green"), koopasDisplayed.get(i).getLocation(), vel, koopasDisplayed.get(i).getAcceleration(), koopasDisplayed.get(i).getType());
                     //Koopa nuovo = bouncingSprites.get(i);
                     //nuovo.setVelocity(new PVector(- nuovo.getVelocity().x, nuovo.getVelocity().y));
-                    bouncingSprites.add(n);
+                    koopasDisplayed.add(n);
                     root.getChildren().add(n);
                     root.getChildren().remove(markSprites.get(j));
                     markSprites.remove(j);
                 }
             }
+
+            if (koopasDisplayed.get(i).getBoundsInParent().intersects(line.getBoundsInParent())){
+                koopasNotDisplayed.addFirst(koopasDisplayed.get(i));
+                root.getChildren().remove(koopasDisplayed.get(i));
+                koopasDisplayed.remove(i);
+            }
+
         }
         //bouncingSprites.forEach(spriteBouncing -> spriteBouncing.update(bouncingSprites));
     }
@@ -165,30 +170,42 @@ public class DancingLineController {
 
     @FXML
     void onMousePressed(MouseEvent event) {
-
         double startX = line.getStartX();
         double startY = line.getStartY();
         double endX = event.getX();
         double endY = event.getY();
 
         //double length = (new Point2D(startX, startY)).distance(endX, endY);
+        System.out.println("Lista " + koopasDisplayed.size());
+        System.out.println("prima rimozione " + koopasNotDisplayed.size());
 
-        force = new Line(root.getPrefWidth() / 2, line.localToParent(line.getStartX(), line.getStartY()).getY(), event.getX(), event.getY());
-        force.setStrokeWidth(5);
-        root.getChildren().add(force);
+        if (!koopasNotDisplayed.isEmpty()){
+            Koopa k = koopasNotDisplayed.removeLast();
+            k.setLocation(new PVector(root.getPrefWidth() / 2, line.localToParent(line.getStartX(), line.getStartY()).getY() - 60));
+            k.setVelocity(new PVector(0,0));
+            koopasDisplayed.add(k);
+            root.getChildren().add(k);
+            System.out.println("dopo rimozione " + koopasNotDisplayed.size());
+            force = new Line(root.getPrefWidth() / 2, line.localToParent(line.getStartX(), line.getStartY()).getY() - 60, event.getX(), event.getY());
+            force.setStrokeWidth(5);
+            root.getChildren().add(force);
+        }
     }
 
     @FXML
     void onMouseReleased(MouseEvent event) {
-        Optional<Koopa> sprite = bouncingSprites.stream()
-                .filter(bs -> bs.getBoundsInParent().intersects(line.getBoundsInParent()))
+
+        //bs.getBoundsInParent().intersects(line.getBoundsInParent())
+
+        Optional<Koopa> sprite = koopasDisplayed.stream()
+                .filter(bs -> bs.getBoundsInParent().contains(line.localToParent((line.getStartX() + line.getEndX()) / 2, line.getStartY() - 60)))
                 .findFirst();
         if (sprite.isPresent()) {
             System.out.println("sprite trovata in onMouseReleased");
             PVector impulse = new PVector(
                     force.getEndX() - force.getStartX(),
                     force.getEndY() - force.getStartY());
-            sprite.get().applyImpulseForce(impulse.multiply(0.005));
+            sprite.get().applyImpulseForce(impulse.multiply(0.009));
         }
         root.getChildren().removeAll(force);
     }
