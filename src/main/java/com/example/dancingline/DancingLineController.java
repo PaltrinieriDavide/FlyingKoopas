@@ -4,12 +4,16 @@ import com.example.dancingline.motionelements.PVector;
 import com.example.dancingline.motionelements.UtilsColor;
 import javafx.animation.AnimationTimer;
 import javafx.fxml.FXML;
+import javafx.geometry.Point2D;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
+import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 
 import java.io.FileNotFoundException;
 import java.util.*;
@@ -22,6 +26,19 @@ public class DancingLineController {
     private Line line;
     @FXML
     private Pane root;
+    @FXML
+    private Text textGreen;
+    @FXML
+    private Text textBlue;
+    @FXML
+    private Text textRed;
+    @FXML
+    private ImageView koopaBlueImg;
+    @FXML
+    private ImageView koopaGreenImg;
+    @FXML
+    private ImageView koopaRedImg;
+
     Line force;
     AnimationTimer timer;
     List<Koopa> koopasDisplayed = new ArrayList<>();
@@ -54,6 +71,56 @@ public class DancingLineController {
     }
 
     private void initializeObjects() {
+
+        koopaGreenImg = generateItemKoopa("green");
+        koopaRedImg = generateItemKoopa("red");
+        koopaBlueImg = generateItemKoopa("blue");
+
+        koopaGreenImg.setX(30);
+        koopaRedImg.setX(30);
+        koopaBlueImg.setX(30);
+
+        koopaGreenImg.setY(root.getPrefHeight() * 0.85);
+        koopaRedImg.setY(root.getPrefHeight() * 0.90);
+        koopaBlueImg.setY(root.getPrefHeight() * 0.95);
+
+        koopaGreenImg.setTranslateY(-20);
+        koopaRedImg.setTranslateY(-20);
+        koopaBlueImg.setTranslateY(-20);
+
+        root.getChildren().add(koopaGreenImg);
+        root.getChildren().add(koopaRedImg);
+        root.getChildren().add(koopaBlueImg);
+
+        textGreen = new Text("");
+        textRed = new Text("");
+        textBlue = new Text("");
+
+        textGreen.setFont(new Font(20));
+        textGreen.setFill(Color.WHITE);
+
+        textRed.setFont(new Font(20));
+        textRed.setFill(Color.WHITE);
+
+        textBlue.setFont(new Font(20));
+        textBlue.setFill(Color.WHITE);
+
+        textGreen.setX(60);
+        textRed.setX(60);
+        textBlue.setX(60);
+
+        textGreen.setY(root.getPrefHeight() * 0.85);
+        textRed.setY(root.getPrefHeight() * 0.90);
+        textBlue.setY(root.getPrefHeight() * 0.95);
+
+        textGreen.setText("0");
+        textRed.setText("0");
+        textBlue.setText("0");
+
+        root.getChildren().add(textGreen);
+        root.getChildren().add(textRed);
+        root.getChildren().add(textBlue);
+
         try {
             generateMap();
         } catch (FileNotFoundException e) {
@@ -63,7 +130,7 @@ public class DancingLineController {
         Random rand = new Random();
         koopasDisplayed.clear();
 
-        System.out.println("ROOT: H " + root.getPrefHeight());
+        //System.out.println("ROOT: H " + root.getPrefHeight());
 
         line.setStartX(line.parentToLocal(0, root.getPrefHeight() * 0.95).getX());
         line.setStartY(line.parentToLocal(0, root.getPrefHeight() * 0.95).getY());
@@ -80,25 +147,15 @@ public class DancingLineController {
     }
 
     private Koopa generateKoopa(double x, double y, String type) {
-        Image img = new Image(Objects.requireNonNull(getClass().getResourceAsStream("assets/koopaverde.png")));
         ImageView item = generateItemKoopa(type);
 
-        Koopa koopa = new Koopa(item, "green");
-
-        //sb.setLocation(new PVector(sb.parentToLocal(x, y).getX(), sb.parentToLocal(x, y).getY()));
-        System.out.println(koopa.parentToLocal(x, y).getX() + " " + koopa.parentToLocal(x, y).getY());
-        System.out.println(x + " " + y);
+        Koopa koopa = new Koopa(item, type);
 
         koopa.setLocation(new PVector(x,y));
         koopa.setVelocity(new PVector(0,0));
         koopa.setAcceleration(new PVector(0,0));
 
-        PVector location = new PVector(x, y);
-        PVector velocity = new PVector(0,0);
-        PVector acceleration = new PVector(0, 0);
-
         return koopa;
-
     }
 
     private void initializeTimer() {
@@ -127,12 +184,50 @@ public class DancingLineController {
 
             for (int j = 0; j < Math.max(wallSprites.size(), markSprites.size()); j++){
                 if (j < wallSprites.size() && koopasDisplayed.get(i).getBoundsInParent().intersects(wallSprites.get(j).getBoundsInParent())){
-                    koopasDisplayed.get(i).setVelocity( new PVector(
-                            koopasDisplayed.get(i).getVelocity().x,
-                            - koopasDisplayed.get(i).getVelocity().y)
-                    );
-                    root.getChildren().remove(wallSprites.get(j));
-                    wallSprites.remove(j);
+                    switch (koopasDisplayed.get(i).getType()){
+                        case "green":
+                            koopasDisplayed.get(i).setVelocity( new PVector(
+                                    koopasDisplayed.get(i).getVelocity().x,
+                                    - koopasDisplayed.get(i).getVelocity().y)
+                            );
+                            root.getChildren().remove(wallSprites.get(j));
+                            wallSprites.remove(j);
+                            break;
+                        case "red":
+                            root.getChildren().remove(wallSprites.get(j));
+                            wallSprites.remove(j);
+                            break;
+
+
+                            //NON CORRETTO
+                        case "blue":
+                            Point2D koopaLocation = koopasDisplayed.get(i).localToParent(koopasDisplayed.get(i).getLocation().x, koopasDisplayed.get(i).getLocation().y);
+                            Rectangle rectangle = new Rectangle(
+                                    koopaLocation.getX(),
+                                    koopaLocation.getY(),
+                                    70, 70);
+                            rectangle.setFill(Color.ORANGE);
+                            root.getChildren().add(rectangle);
+                            for (WallSprite ws:wallSprites) {
+                                if (rectangle.getBoundsInParent().intersects(ws.getBoundsInParent())){
+                                    root.getChildren().remove(wallSprites.get(j));
+                                    wallSprites.remove(j);
+                                }
+                            }
+                            for (QuestionMarkSprite qms:markSprites) {
+                                if (rectangle.getBoundsInParent().intersects(qms.getBoundsInParent())){
+                                    root.getChildren().remove(markSprites.get(j));
+                                    markSprites.remove(j);
+                                }
+                            }
+                            koopasDisplayed.get(i).setVelocity( new PVector(
+                                    koopasDisplayed.get(i).getVelocity().x,
+                                    - koopasDisplayed.get(i).getVelocity().y)
+                            );
+                            //root.getChildren().remove(rectangle);
+                            break;
+                        default: break;
+                    }
                     break;
                 }
                 else if(j < markSprites.size() && koopasDisplayed.get(i).getBoundsInParent().intersects(markSprites.get(j).getBoundsInParent())){
@@ -141,7 +236,19 @@ public class DancingLineController {
                             koopasDisplayed.get(i).getVelocity().x,
                             - koopasDisplayed.get(i).getVelocity().y)
                     );
-                    Koopa n = new Koopa(generateItemKoopa("green"), koopasDisplayed.get(i).getLocation(), vel, koopasDisplayed.get(i).getAcceleration(), koopasDisplayed.get(i).getType());
+
+                    Koopa n;
+                    Random rand = new Random();
+                    n = switch (rand.nextInt(3)) {
+                        case 0 ->
+                                new Koopa(generateItemKoopa("green"), koopasDisplayed.get(i).getLocation(), vel, koopasDisplayed.get(i).getAcceleration(), "green");
+                        case 1 ->
+                                new Koopa(generateItemKoopa("red"), koopasDisplayed.get(i).getLocation(), vel, koopasDisplayed.get(i).getAcceleration(), "red");
+                        case 2 ->
+                                new Koopa(generateItemKoopa("blue"), koopasDisplayed.get(i).getLocation(), vel, koopasDisplayed.get(i).getAcceleration(), "blue");
+                        default ->
+                                new Koopa(generateItemKoopa("green"), koopasDisplayed.get(i).getLocation(), vel, koopasDisplayed.get(i).getAcceleration(), "green");
+                    };
                     //Koopa nuovo = bouncingSprites.get(i);
                     //nuovo.setVelocity(new PVector(- nuovo.getVelocity().x, nuovo.getVelocity().y));
                     koopasDisplayed.add(n);
@@ -158,6 +265,11 @@ public class DancingLineController {
             }
 
         }
+
+        textGreen.setText(String.format("%d", koopasNotDisplayed.stream().filter(k -> Objects.equals(k.getType(), "green")).count()));
+        textRed.setText(String.format("%d", koopasNotDisplayed.stream().filter(k -> Objects.equals(k.getType(), "red")).count()));
+        textBlue.setText(String.format("%d", koopasNotDisplayed.stream().filter(k -> Objects.equals(k.getType(), "blue")).count()));
+
         //bouncingSprites.forEach(spriteBouncing -> spriteBouncing.update(bouncingSprites));
     }
     @FXML
@@ -176,8 +288,8 @@ public class DancingLineController {
         double endY = event.getY();
 
         //double length = (new Point2D(startX, startY)).distance(endX, endY);
-        System.out.println("Lista " + koopasDisplayed.size());
-        System.out.println("prima rimozione " + koopasNotDisplayed.size());
+        //System.out.println("Lista " + koopasDisplayed.size());
+        //System.out.println("prima rimozione " + koopasNotDisplayed.size());
 
         if (!koopasNotDisplayed.isEmpty()){
             Koopa k = koopasNotDisplayed.removeLast();
@@ -185,7 +297,7 @@ public class DancingLineController {
             k.setVelocity(new PVector(0,0));
             koopasDisplayed.add(k);
             root.getChildren().add(k);
-            System.out.println("dopo rimozione " + koopasNotDisplayed.size());
+            //System.out.println("dopo rimozione " + koopasNotDisplayed.size());
             force = new Line(root.getPrefWidth() / 2, line.localToParent(line.getStartX(), line.getStartY()).getY() - 60, event.getX(), event.getY());
             force.setStrokeWidth(5);
             root.getChildren().add(force);
@@ -218,8 +330,8 @@ public class DancingLineController {
         Image imgWall = new Image(Objects.requireNonNull(getClass().getResourceAsStream("assets/wall.png")));
         Image imgItem = new Image(Objects.requireNonNull(getClass().getResourceAsStream("assets/questionMark.png")));
 
-        for(int j = 0; j<9; j++){
-            for(int i = 0; i< 36; i++){
+        for(int j = 0; j<12; j++){
+            for(int i = 0; i< 28; i++){
                 value=rand.nextInt(100);
                 if(value>=60){
                     ImageView item = new ImageView();
@@ -260,19 +372,12 @@ public class DancingLineController {
     }
 
     public ImageView generateItemKoopa(String type){
-        Image img;
-        switch(type){
-            case "green":
-                img = new Image(Objects.requireNonNull(getClass().getResourceAsStream("assets/koopaverde.png")));
-                break;
-            case "red":
-                img = new Image(Objects.requireNonNull(getClass().getResourceAsStream("assets/kooparosso.png")));
-                break;
-            case "blue":
-                img = new Image(Objects.requireNonNull(getClass().getResourceAsStream("assets/koopablue.png")));
-            default:
-                img = new Image(Objects.requireNonNull(getClass().getResourceAsStream("assets/koopaverde.png")));
-        }
+        Image img = switch (type) {
+            case "green" -> new Image(Objects.requireNonNull(getClass().getResourceAsStream("assets/koopaverde.png")));
+            case "red" -> new Image(Objects.requireNonNull(getClass().getResourceAsStream("assets/kooparosso.png")));
+            case "blue" -> new Image(Objects.requireNonNull(getClass().getResourceAsStream("assets/koopablu.png")));
+            default -> new Image(Objects.requireNonNull(getClass().getResourceAsStream("assets/koopeverde.png")));
+        };
 
         ImageView item = new ImageView();
         item.setImage(img);

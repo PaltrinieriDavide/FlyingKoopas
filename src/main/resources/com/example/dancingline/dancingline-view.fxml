@@ -1,10 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.shape.Line?>
+<?import javafx.scene.text.Text?>
 
 <Pane fx:id="root" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onMouseDragged="#onMouseDragged" onMousePressed="#onMousePressed" onMouseReleased="#onMouseReleased" prefHeight="850.0" prefWidth="1388.0" stylesheets="@style/dancingLineStyle.css" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.dancingline.DancingLineController">
    <children>
-      <Line fx:id="line" endX="854.0" layoutX="434.0" layoutY="496.0" startX="-434.0" startY="3.0517578125E-5" stroke="WHITE" />
+      <Line fx:id="line" endX="854.0" layoutX="434.0" layoutY="496.0" startX="-434.0" startY="3.0517578125E-5" stroke="#ffffff00" />
+      <ImageView fx:id="koopaGreenImg" fitHeight="150.0" fitWidth="200.0" layoutX="165.0" layoutY="569.0" pickOnBounds="true" preserveRatio="true" />
+      <ImageView fx:id="koopaRedImg" fitHeight="150.0" fitWidth="200.0" layoutX="530.0" layoutY="574.0" pickOnBounds="true" preserveRatio="true" />
+      <ImageView fx:id="koopaBlueImg" fitHeight="150.0" fitWidth="200.0" layoutX="978.0" layoutY="585.0" pickOnBounds="true" preserveRatio="true" />
+      <Text fx:id="textGreen" layoutX="186.0" layoutY="624.0" strokeType="OUTSIDE" strokeWidth="0.0" text="0" />
+      <Text fx:id="textRed" layoutX="186.0" layoutY="624.0" strokeType="OUTSIDE" strokeWidth="0.0" text="0" />
+      <Text fx:id="textBlue" layoutX="139.0" layoutY="573.0" strokeType="OUTSIDE" strokeWidth="0.0" text="0" wrappingWidth="53.51332092285156" />
    </children>
 </Pane>
