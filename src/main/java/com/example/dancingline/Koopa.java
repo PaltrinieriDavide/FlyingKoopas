@@ -32,11 +32,11 @@ public class Koopa extends SpriteBouncing {
         return RADIUS;
     }
 
-    public SpriteBouncing update(List<Koopa> koopasList, List<WallSprite> wallList, List<QuestionMarkSprite> questionMarkList) {
+    public SpriteBouncing update(List<Koopa> koopasList, List<WallSprite> wallList, List<QuestionMarkSprite> questionMarkList, List<WallSprite> evilWallSprites) {
         super.update();
         //koopaBounceKoopas(koopasList);
 
-        return koopaBounceWallsQuestionMark(wallList, questionMarkList);
+        return koopaBounceWallsQuestionMark(wallList, questionMarkList, evilWallSprites);
     }
 
     public void koopaBounceKoopas(List<Koopa> koopasList){
@@ -87,7 +87,7 @@ public class Koopa extends SpriteBouncing {
         }
     }
 
-    public SpriteBouncing koopaBounceWallsQuestionMark(List<WallSprite> wallList, List<QuestionMarkSprite> questionMarkList){
+    public SpriteBouncing koopaBounceWallsQuestionMark(List<WallSprite> wallList, List<QuestionMarkSprite> questionMarkList, List<WallSprite> evilWallSprites){
 
         Point2D koopa = new Point2D(localToParent(getLocation().x, getLocation().y).getX(),
                 localToParent(getLocation().x, getLocation().y).getY());
@@ -96,37 +96,19 @@ public class Koopa extends SpriteBouncing {
 
         for (int j = 0; j < Math.max(wallList.size(), questionMarkList.size()); j++){
 
-            Point2D rectangle = new Point2D(wallList.get(j).localToParent(wallList.get(j).getLocation().x, wallList.get(j).getLocation().y).getX(),
-                    wallList.get(j).localToParent(wallList.get(j).getLocation().x, wallList.get(j).getLocation().y).getY());
-
-            double rectCenterX = rectangle.getX() + wallList.get(j).getHeight() / 2;
-            double rectCenterY = rectangle.getY() + wallList.get(j).getWidth() / 2;
-
-            //System.out.println(wallList.get(j).getHeight() + " - " + wallList.get(j).getWidth());
-
-            double deltaX = koopaCenterX - rectCenterX;
-            double deltaY = koopaCenterY - rectCenterY;
-            double widthOverlap = (RADIUS + wallList.get(j).getWidth() / 2) - Math.abs(deltaX);
-            double heightOverlap = (RADIUS + wallList.get(j).getHeight() / 2) - Math.abs(deltaY);
-
-            /*
-            if (widthOverlap < heightOverlap) {
-                // Horizontal collision
-                this.setVelocity( new PVector(
-                        - this.getVelocity().x,
-                        this.getVelocity().y)
-                );
-            } else {
-                // Vertical collision
-                this.setVelocity( new PVector(
-                        this.getVelocity().x,
-                        - this.getVelocity().y)
-                );
-            }
-             */
-
-
             if (j < wallList.size() && this.getBoundsInParent().intersects(wallList.get(j).getBoundsInParent())){
+                Point2D rectangle = new Point2D(wallList.get(j).localToParent(wallList.get(j).getLocation().x, wallList.get(j).getLocation().y).getX(),
+                        wallList.get(j).localToParent(wallList.get(j).getLocation().x, wallList.get(j).getLocation().y).getY());
+
+                double rectCenterX = rectangle.getX() + wallList.get(j).getHeight() / 2;
+                double rectCenterY = rectangle.getY() + wallList.get(j).getWidth() / 2;
+
+                //System.out.println(wallList.get(j).getHeight() + " - " + wallList.get(j).getWidth());
+
+                double deltaX = koopaCenterX - rectCenterX;
+                double deltaY = koopaCenterY - rectCenterY;
+                double widthOverlap = (RADIUS + wallList.get(j).getWidth() / 2) - Math.abs(deltaX);
+                double heightOverlap = (RADIUS + wallList.get(j).getHeight() / 2) - Math.abs(deltaY);
                 if (widthOverlap < heightOverlap){
                     this.setVelocity( new PVector(
                             - this.getVelocity().x,
@@ -141,6 +123,18 @@ public class Koopa extends SpriteBouncing {
                 return wallList.remove(j);
             }
             else if(j < questionMarkList.size() && this.getBoundsInParent().intersects(questionMarkList.get(j).getBoundsInParent())){
+                Point2D rectangle = new Point2D(questionMarkList.get(j).localToParent(questionMarkList.get(j).getLocation().x, questionMarkList.get(j).getLocation().y).getX(),
+                        questionMarkList.get(j).localToParent(questionMarkList.get(j).getLocation().x, questionMarkList.get(j).getLocation().y).getY());
+
+                double rectCenterX = rectangle.getX() + questionMarkList.get(j).getHeight() / 2;
+                double rectCenterY = rectangle.getY() + questionMarkList.get(j).getWidth() / 2;
+
+                //System.out.println(wallList.get(j).getHeight() + " - " + wallList.get(j).getWidth());
+
+                double deltaX = koopaCenterX - rectCenterX;
+                double deltaY = koopaCenterY - rectCenterY;
+                double widthOverlap = (RADIUS + questionMarkList.get(j).getWidth() / 2) - Math.abs(deltaX);
+                double heightOverlap = (RADIUS + questionMarkList.get(j).getHeight() / 2) - Math.abs(deltaY);
 
                 if (widthOverlap < heightOverlap){
                     this.setVelocity( new PVector(
@@ -155,6 +149,33 @@ public class Koopa extends SpriteBouncing {
                 }
 
                 return questionMarkList.remove(j);
+            }
+            else if(j < evilWallSprites.size() && getBoundsInParent().intersects(evilWallSprites.get(j).getBoundsInParent())){
+                Point2D rectangle = new Point2D(evilWallSprites.get(j).localToParent(evilWallSprites.get(j).getLocation().x, evilWallSprites.get(j).getLocation().y).getX(),
+                        evilWallSprites.get(j).localToParent(evilWallSprites.get(j).getLocation().x, evilWallSprites.get(j).getLocation().y).getY());
+
+                double rectCenterX = rectangle.getX() + evilWallSprites.get(j).getHeight() / 2;
+                double rectCenterY = rectangle.getY() + evilWallSprites.get(j).getWidth() / 2;
+
+                //System.out.println(wallList.get(j).getHeight() + " - " + wallList.get(j).getWidth());
+
+                double deltaX = koopaCenterX - rectCenterX;
+                double deltaY = koopaCenterY - rectCenterY;
+                double widthOverlap = (RADIUS + evilWallSprites.get(j).getWidth() / 2) - Math.abs(deltaX);
+                double heightOverlap = (RADIUS + evilWallSprites.get(j).getHeight() / 2) - Math.abs(deltaY);
+
+                if (widthOverlap < heightOverlap){
+                    this.setVelocity( new PVector(
+                            - this.getVelocity().x,
+                            this.getVelocity().y)
+                    );
+                }else{
+                    this.setVelocity( new PVector(
+                            this.getVelocity().x,
+                            - this.getVelocity().y)
+                    );
+                }
+                return null;
             }
         }
         return null;

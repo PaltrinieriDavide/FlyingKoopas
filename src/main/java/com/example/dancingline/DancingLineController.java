@@ -197,7 +197,7 @@ public class DancingLineController {
         line.setEndY(line.parentToLocal(root.getPrefWidth(), root.getPrefHeight() * 0.95).getY());
 
         for (int i = 0; i < 1; i++) {
-            Koopa k = generateKoopa(root.getPrefWidth() / 2, line.localToParent(line.getStartX(), line.getStartY()).getY() - 60, "green");
+            Koopa k = generateKoopa(0,0, "green");
             //koopasDisplayed.add(k);
             koopasNotDisplayed.add(k);
         }
@@ -207,6 +207,8 @@ public class DancingLineController {
         ImageView item = generateItemKoopa(type);
 
         Koopa koopa = new Koopa(item, type);
+
+        SpriteBouncing.DEBUG_ENABLED = true;
 
         koopa.setLocation(new PVector(x,y));
         koopa.setVelocity(new PVector(0,0));
@@ -240,56 +242,35 @@ public class DancingLineController {
 
         for (int i = 0; i < koopasDisplayed.size(); i++){
 
-            koopasDisplayed.get(i).update(koopasDisplayed);
-
-            for (int j = 0; j < Math.max(wallSprites.size(), markSprites.size()); j++){
-                if (j < wallSprites.size() && koopasDisplayed.get(i).getBoundsInParent().intersects(wallSprites.get(j).getBoundsInParent())){
-                    koopasDisplayed.get(i).setVelocity( new PVector(
-                            koopasDisplayed.get(i).getVelocity().x,
-                            - koopasDisplayed.get(i).getVelocity().y)
-                    );
-                    root.getChildren().remove(wallSprites.get(j));
-                    wallSprites.remove(j);
-                    break;
-                }
-                else if(j < markSprites.size() && koopasDisplayed.get(i).getBoundsInParent().intersects(markSprites.get(j).getBoundsInParent())){
-                    PVector vel = new PVector(koopasDisplayed.get(i).getVelocity().x, koopasDisplayed.get(i).getVelocity().y);
-                    koopasDisplayed.get(i).setVelocity( new PVector(
-                            koopasDisplayed.get(i).getVelocity().x,
-                            - koopasDisplayed.get(i).getVelocity().y)
-                    );
-                    Koopa n;
-                    Random rand = new Random();
-                    n = switch (rand.nextInt(3)) {
-                        case 0 ->
-                                new Koopa(generateItemKoopa("green"), koopasDisplayed.get(i).getLocation(), vel, koopasDisplayed.get(i).getAcceleration(), "green");
+            SpriteBouncing item = koopasDisplayed.get(i).update(koopasDisplayed, wallSprites, markSprites, evilWallSprites);
+            if (item instanceof WallSprite){
+                root.getChildren().remove(item);
+            } else if (item instanceof QuestionMarkSprite){
+                PVector vel = new PVector(koopasDisplayed.get(i).getVelocity().x, koopasDisplayed.get(i).getVelocity().y);
+                Koopa n;
+                Random rand = new Random();
+                n = switch (rand.nextInt(3)) {
+                    case 0 ->
+                            new Koopa(generateItemKoopa("green"), koopasDisplayed.get(i).getLocation(), vel, koopasDisplayed.get(i).getAcceleration(), "green");
                         case 1 ->
                                 new Koopa(generateItemKoopa("red"), koopasDisplayed.get(i).getLocation(), vel, koopasDisplayed.get(i).getAcceleration(), "red");
-                        case 2 ->
-                                new Koopa(generateItemKoopa("blue"), koopasDisplayed.get(i).getLocation(), vel.multiply(2), koopasDisplayed.get(i).getAcceleration(), "blue");
-                        default ->
-                                new Koopa(generateItemKoopa("green"), koopasDisplayed.get(i).getLocation(), vel, koopasDisplayed.get(i).getAcceleration(), "green");
-                    };
-                    //Koopa nuovo = bouncingSprites.get(i);
-                    //nuovo.setVelocity(new PVector(- nuovo.getVelocity().x, nuovo.getVelocity().y));
-                    koopasDisplayed.add(n);
-                    root.getChildren().add(n);
-                    root.getChildren().remove(markSprites.get(j));
-                    markSprites.remove(j);
-                }
-                else if(j < evilWallSprites.size() && koopasDisplayed.get(i).getBoundsInParent().intersects(evilWallSprites.get(j).getBoundsInParent())){
-                    koopasDisplayed.get(i).setVelocity( new PVector(
-                            koopasDisplayed.get(i).getVelocity().x,
-                            - koopasDisplayed.get(i).getVelocity().y)
-                    );
-                }
+                    case 2 ->
+                            new Koopa(generateItemKoopa("blue"), koopasDisplayed.get(i).getLocation(), vel.multiply(1.2), koopasDisplayed.get(i).getAcceleration(), "blue");
+                    default ->
+                            new Koopa(generateItemKoopa("green"), koopasDisplayed.get(i).getLocation(), vel, koopasDisplayed.get(i).getAcceleration(), "green");
+                };
+
+                koopasDisplayed.add(n);
+                root.getChildren().add(n);
+                root.getChildren().remove(item);
             }
-            if (koopasDisplayed.get(i).getBoundsInParent().intersects(line.getBoundsInParent())){
+
+            if (koopasDisplayed.get(i).getBoundsInParent().intersects(line.getBoundsInParent()) ||
+                    line.localToParent(line.getStartX(), line.getStartY()).getY() < koopasDisplayed.get(i).getLocation().y){
                 koopasNotDisplayed.addFirst(koopasDisplayed.get(i));
                 root.getChildren().remove(koopasDisplayed.get(i));
                 koopasDisplayed.remove(i);
             }
-
         }
 
         if (wallSprites.isEmpty() && markSprites.isEmpty()){
@@ -298,13 +279,7 @@ public class DancingLineController {
             root.getChildren().removeAll(evilWallSprites);
             evilWallSprites.clear();
         }
-
-
-        textGreen.setText(String.format("%d", koopasNotDisplayed.stream().filter(k -> Objects.equals(k.getType(), "green")).count()));
-        textRed.setText(String.format("%d", koopasNotDisplayed.stream().filter(k -> Objects.equals(k.getType(), "red")).count()));
-        textBlue.setText(String.format("%d", koopasNotDisplayed.stream().filter(k -> Objects.equals(k.getType(), "blue")).count()));
-
-        //bouncingSprites.forEach(spriteBouncing -> spriteBouncing.update(bouncingSprites));
+        updateKoopasCounter();
     }
     @FXML
     void onMouseDragged(MouseEvent event) {
@@ -316,24 +291,14 @@ public class DancingLineController {
 
     @FXML
     void onMousePressed(MouseEvent event) {
-        double startX = line.getStartX();
-        double startY = line.getStartY();
-        double endX = event.getX();
-        double endY = event.getY();
-
-        //double length = (new Point2D(startX, startY)).distance(endX, endY);
-        //System.out.println("Lista " + koopasDisplayed.size());
-        //System.out.println("prima rimozione " + koopasNotDisplayed.size());
-
         if (!koopasNotDisplayed.isEmpty()){
             Koopa k = koopasNotDisplayed.removeLast();
-            k.setLocation(new PVector(root.getPrefWidth() / 2, line.localToParent(line.getStartX(), line.getStartY()).getY() - 60));
+            k.setLocation(new PVector((root.getPrefWidth() / 2) - Koopa.getRADIUS(), line.localToParent(line.getStartX(), line.getStartY()).getY() - 60 - (Koopa.getRADIUS() / 2)));
             k.setVelocity(new PVector(0,0));
             koopasDisplayed.add(k);
             root.getChildren().add(k);
             //System.out.println("dopo rimozione " + koopasNotDisplayed.size());
-            force = new Line(root.getPrefWidth() / 2, line.localToParent(line.getStartX(), line.getStartY()).getY() - 60, event.getX(), event.getY());
-            force.setStrokeWidth(5);
+            force = new Line((root.getPrefWidth() / 2)  - Koopa.getRADIUS() / 2, line.localToParent(line.getStartX(), line.getStartY()).getY() - 60, event.getX(), event.getY());            force.setStrokeWidth(5);
             root.getChildren().add(force);
         }
     }
@@ -354,7 +319,7 @@ public class DancingLineController {
             System.out.println("distance: " + distance);
             if (distance > 60){
                 if(sprite.get().getType().equals("blue")){
-                    sprite.get().applyImpulseForce(impulse.multiply(0.08));
+                    sprite.get().applyImpulseForce(impulse.multiply(0.04));
                 }else{
                     sprite.get().applyImpulseForce(impulse.multiply(0.015));
                 }
@@ -446,16 +411,17 @@ public class DancingLineController {
 
         ImageView item = new ImageView();
         item.setImage(img);
-        item.setFitHeight(30);
-        item.setFitWidth(30);
+        item.setFitHeight(Koopa.getRADIUS());
+        item.setFitWidth(Koopa.getRADIUS());
 
-        item.setTranslateY(- 15);
-        item.setTranslateX(- 15);
         return item;
     }
 
-    public void generateWall(){
+    public void updateKoopasCounter(){
+        textGreen.setText(String.format("%d", koopasNotDisplayed.stream().filter(k -> Objects.equals(k.getType(), "green")).count()));
+        textRed.setText(String.format("%d", koopasNotDisplayed.stream().filter(k -> Objects.equals(k.getType(), "red")).count()));
+        textBlue.setText(String.format("%d", koopasNotDisplayed.stream().filter(k -> Objects.equals(k.getType(), "blue")).count()));
 
-    }
+            }
 }
 
