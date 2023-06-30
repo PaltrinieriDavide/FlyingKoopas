@@ -2,9 +2,11 @@ package com.example.dancingline.motionelements;
 
 import javafx.geometry.Point2D;
 import javafx.scene.Node;
-import javafx.scene.layout.Region;
+import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
 
 public class Sprite extends Region {
+    public static boolean DEBUG_ENABLED = false;
     PVector location;
     PVector velocity;
     PVector acceleration;
@@ -115,6 +117,9 @@ public class Sprite extends Region {
         setTranslateX(location.x);
         setTranslateY(location.y);
 
+        if (DEBUG_ENABLED) {
+            setBorder(new Border(new BorderStroke(Color.BLUE, BorderStrokeStyle.DASHED, CornerRadii.EMPTY, BorderWidths.DEFAULT)));
+        }
     }
 
     public void update(PVector velocity) {
