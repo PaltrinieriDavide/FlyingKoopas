@@ -47,6 +47,7 @@ public class DancingLineController {
     Line force;
     AnimationTimer timer;
     List<Koopa> koopasDisplayed = new ArrayList<>();
+    List<WallSprite> evilWallSprites = new ArrayList<>();
     List<WallSprite> wallSprites = new ArrayList<>();
     List<QuestionMarkSprite> markSprites = new ArrayList<>();
     Deque<Koopa> koopasNotDisplayed = new ArrayDeque<>();
@@ -54,39 +55,59 @@ public class DancingLineController {
         onReset();
     }
     void onReset() {
-
-        /*
-        root.widthProperty().addListener((obs, oldWidth, newWidth) -> {
-            double width = newWidth.doubleValue();
-            System.out.println("Larghezza pannello root: " + rootWidth);
-            rootWidth = width;
-        });
-
-        root.heightProperty().addListener((obs, oldHeight, newHeight) -> {
-            double height = newHeight.doubleValue();
-            System.out.println("Altezza pannello root: " + rootHeight);
-            rootHeight = height;
-        });
-         */
-
         initializeTimer();
         initializeObjects();
     }
     private void initializeObjects() {
+
         InputStream is = getClass().getResourceAsStream("font/SuperMario256.ttf");
-        Font youWinFont = Font.loadFont(is, 100);
+        Font youWinFont = Font.loadFont(is, 200);
         textWin = new Text("YOU WIN");
         textWin.setFont(youWinFont);
         textWin.setFill(Color.WHITE);
-        textWin.setX(root.getPrefWidth()*0.37);
-        textWin.setY(root.getPrefHeight()*0.30);
+        textWin.setX(root.getPrefWidth()*0.16);
+        textWin.setY(root.getPrefHeight()*0.40);
         root.getChildren().add(textWin);
         textWin.setVisible(false);
 
         winButton = new Button("RESTART GAME");
+        winButton.setStyle("-fx-background-color: #FDF5E6;\n" +
+                "    -fx-background-radius: 50;\n" +
+                "    -fx-padding: 8px 16px;\n" +
+                "    -fx-border-radius: 50px;\n" +
+                "    -fx-border-color: #E4D8C5 ;\n" +
+                "    -fx-border-width: 1px;" +
+                "-fx-pref-width: 225px;" +
+                " -fx-pref-height: 75px;" +
+                "-fx-font-size: 24px;");
+
+
+        winButton.setOnMouseEntered(event -> {
+            winButton.setStyle("-fx-background-color: #e5cc9e;\n" +
+                    "    -fx-background-radius: 50;\n" +
+                    "    -fx-padding: 8px 16px;\n" +
+                    "    -fx-border-radius: 50px;\n" +
+                    "    -fx-border-color: #d0ad67 ;\n" +
+                    "    -fx-border-width: 1px;" +
+                    "-fx-pref-width: 225px;" +
+                    " -fx-pref-height: 75px;" +
+                    "-fx-font-size: 24px;");
+        });
+        winButton.setOnMouseExited(event -> {
+            winButton.setStyle("-fx-background-color: #FDF5E6;\n" +
+                    "    -fx-background-radius: 50;\n" +
+                    "    -fx-padding: 8px 16px;\n" +
+                    "    -fx-border-radius: 50px;\n" +
+                    "    -fx-border-color: #E4D8C5 ;\n" +
+                    "    -fx-border-width: 1px;" +
+                    "-fx-pref-width: 225px;" +
+                    " -fx-pref-height: 75px;" +
+                    "-fx-font-size: 24px;");
+        });
+
         winButton.setVisible(false);
-        winButton.setTranslateX(root.getPrefWidth()*0.43);
-        winButton.setTranslateY(root.getPrefHeight()*0.50);
+        winButton.setTranslateX(root.getPrefWidth()*0.42);
+        winButton.setTranslateY(root.getPrefHeight()*0.60);
         root.getChildren().add(winButton);
         winButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override
@@ -100,6 +121,7 @@ public class DancingLineController {
                 root.getChildren().remove(textGreen);
                 root.getChildren().remove(textRed);
                 root.getChildren().remove(textBlue);
+
                 wallSprites.clear();
                 markSprites.clear();
                 root.getChildren().removeAll(koopasDisplayed);
@@ -175,8 +197,7 @@ public class DancingLineController {
         line.setEndY(line.parentToLocal(root.getPrefWidth(), root.getPrefHeight() * 0.95).getY());
 
         for (int i = 0; i < 1; i++) {
-            //Koopa k = generateKoopa((root.getPrefWidth() / 2), line.localToParent(line.getStartX(), line.getStartY()).getY() - 60, "green");
-            Koopa k = generateKoopa(0,0, "green");
+            Koopa k = generateKoopa(root.getPrefWidth() / 2, line.localToParent(line.getStartX(), line.getStartY()).getY() - 60, "green");
             //koopasDisplayed.add(k);
             koopasNotDisplayed.add(k);
         }
@@ -186,8 +207,6 @@ public class DancingLineController {
         ImageView item = generateItemKoopa(type);
 
         Koopa koopa = new Koopa(item, type);
-
-        SpriteBouncing.DEBUG_ENABLED = true;
 
         koopa.setLocation(new PVector(x,y));
         koopa.setVelocity(new PVector(0,0));
@@ -215,50 +234,78 @@ public class DancingLineController {
         timer.start();
     }
     private void mainLoop() {
+        for(WallSprite ws : evilWallSprites){
+            ws.update();
+        }
+
         for (int i = 0; i < koopasDisplayed.size(); i++){
 
-            SpriteBouncing item = koopasDisplayed.get(i).update(koopasDisplayed, wallSprites, markSprites);
+            koopasDisplayed.get(i).update(koopasDisplayed);
 
-            if (item instanceof WallSprite){
-                root.getChildren().remove(item);
-            } else if (item instanceof QuestionMarkSprite){
-                PVector vel = new PVector(koopasDisplayed.get(i).getVelocity().x, koopasDisplayed.get(i).getVelocity().y);
-                Koopa n;
-                Random rand = new Random();
-                n = switch (rand.nextInt(3)) {
-                    case 0 ->
-                            new Koopa(generateItemKoopa("green"), koopasDisplayed.get(i).getLocation(), vel, koopasDisplayed.get(i).getAcceleration(), "green");
-                    case 1 ->
-                            new Koopa(generateItemKoopa("red"), koopasDisplayed.get(i).getLocation(), vel, koopasDisplayed.get(i).getAcceleration(), "red");
-                    case 2 ->
-                            new Koopa(generateItemKoopa("blue"), koopasDisplayed.get(i).getLocation(), vel.multiply(1.2), koopasDisplayed.get(i).getAcceleration(), "blue");
-                    default ->
-                            new Koopa(generateItemKoopa("green"), koopasDisplayed.get(i).getLocation(), vel, koopasDisplayed.get(i).getAcceleration(), "green");
-                };
-
-                koopasDisplayed.add(n);
-                root.getChildren().add(n);
-                root.getChildren().remove(item);
+            for (int j = 0; j < Math.max(wallSprites.size(), markSprites.size()); j++){
+                if (j < wallSprites.size() && koopasDisplayed.get(i).getBoundsInParent().intersects(wallSprites.get(j).getBoundsInParent())){
+                    koopasDisplayed.get(i).setVelocity( new PVector(
+                            koopasDisplayed.get(i).getVelocity().x,
+                            - koopasDisplayed.get(i).getVelocity().y)
+                    );
+                    root.getChildren().remove(wallSprites.get(j));
+                    wallSprites.remove(j);
+                    break;
+                }
+                else if(j < markSprites.size() && koopasDisplayed.get(i).getBoundsInParent().intersects(markSprites.get(j).getBoundsInParent())){
+                    PVector vel = new PVector(koopasDisplayed.get(i).getVelocity().x, koopasDisplayed.get(i).getVelocity().y);
+                    koopasDisplayed.get(i).setVelocity( new PVector(
+                            koopasDisplayed.get(i).getVelocity().x,
+                            - koopasDisplayed.get(i).getVelocity().y)
+                    );
+                    Koopa n;
+                    Random rand = new Random();
+                    n = switch (rand.nextInt(3)) {
+                        case 0 ->
+                                new Koopa(generateItemKoopa("green"), koopasDisplayed.get(i).getLocation(), vel, koopasDisplayed.get(i).getAcceleration(), "green");
+                        case 1 ->
+                                new Koopa(generateItemKoopa("red"), koopasDisplayed.get(i).getLocation(), vel, koopasDisplayed.get(i).getAcceleration(), "red");
+                        case 2 ->
+                                new Koopa(generateItemKoopa("blue"), koopasDisplayed.get(i).getLocation(), vel.multiply(2), koopasDisplayed.get(i).getAcceleration(), "blue");
+                        default ->
+                                new Koopa(generateItemKoopa("green"), koopasDisplayed.get(i).getLocation(), vel, koopasDisplayed.get(i).getAcceleration(), "green");
+                    };
+                    //Koopa nuovo = bouncingSprites.get(i);
+                    //nuovo.setVelocity(new PVector(- nuovo.getVelocity().x, nuovo.getVelocity().y));
+                    koopasDisplayed.add(n);
+                    root.getChildren().add(n);
+                    root.getChildren().remove(markSprites.get(j));
+                    markSprites.remove(j);
+                }
+                else if(j < evilWallSprites.size() && koopasDisplayed.get(i).getBoundsInParent().intersects(evilWallSprites.get(j).getBoundsInParent())){
+                    koopasDisplayed.get(i).setVelocity( new PVector(
+                            koopasDisplayed.get(i).getVelocity().x,
+                            - koopasDisplayed.get(i).getVelocity().y)
+                    );
+                }
             }
-
-            if (koopasDisplayed.get(i).getBoundsInParent().intersects(line.getBoundsInParent()) ||
-                    line.localToParent(line.getStartX(), line.getStartY()).getY() < koopasDisplayed.get(i).getLocation().y){
+            if (koopasDisplayed.get(i).getBoundsInParent().intersects(line.getBoundsInParent())){
                 koopasNotDisplayed.addFirst(koopasDisplayed.get(i));
                 root.getChildren().remove(koopasDisplayed.get(i));
                 koopasDisplayed.remove(i);
             }
+
         }
 
         if (wallSprites.isEmpty() && markSprites.isEmpty()){
             textWin.setVisible(true);
             winButton.setVisible(true);
+            root.getChildren().removeAll(evilWallSprites);
+            evilWallSprites.clear();
         }
 
-        updateKoopasCounter();
+
+        textGreen.setText(String.format("%d", koopasNotDisplayed.stream().filter(k -> Objects.equals(k.getType(), "green")).count()));
+        textRed.setText(String.format("%d", koopasNotDisplayed.stream().filter(k -> Objects.equals(k.getType(), "red")).count()));
+        textBlue.setText(String.format("%d", koopasNotDisplayed.stream().filter(k -> Objects.equals(k.getType(), "blue")).count()));
+
         //bouncingSprites.forEach(spriteBouncing -> spriteBouncing.update(bouncingSprites));
     }
-
-
     @FXML
     void onMouseDragged(MouseEvent event) {
         force.setEndX(event.getX());
@@ -269,9 +316,18 @@ public class DancingLineController {
 
     @FXML
     void onMousePressed(MouseEvent event) {
+        double startX = line.getStartX();
+        double startY = line.getStartY();
+        double endX = event.getX();
+        double endY = event.getY();
+
+        //double length = (new Point2D(startX, startY)).distance(endX, endY);
+        //System.out.println("Lista " + koopasDisplayed.size());
+        //System.out.println("prima rimozione " + koopasNotDisplayed.size());
+
         if (!koopasNotDisplayed.isEmpty()){
             Koopa k = koopasNotDisplayed.removeLast();
-            k.setLocation(new PVector((root.getPrefWidth() / 2) - 15, line.localToParent(line.getStartX(), line.getStartY()).getY() - 60 - (Koopa.getRADIUS() / 2)));
+            k.setLocation(new PVector(root.getPrefWidth() / 2, line.localToParent(line.getStartX(), line.getStartY()).getY() - 60));
             k.setVelocity(new PVector(0,0));
             koopasDisplayed.add(k);
             root.getChildren().add(k);
@@ -314,15 +370,35 @@ public class DancingLineController {
     private void generateMap() throws FileNotFoundException {
         int value;
         Random rand = new Random();
-        //Image imgWall = new Image(new FileInputStream("C:\\Users\\ricca\\IdeaProjects\\dancingLine\\src\\main\\resources\\com\\example\\dancingline\\assets\\wall.png"));
-        //Image imgItem = new Image(new FileInputStream("C:\\Users\\ricca\\IdeaProjects\\dancingLine\\src\\main\\resources\\com\\example\\dancingline\\assets\\questionMark.png"));
+        int genRowOne = rand.nextInt(12), genRowTwo = rand.nextInt(12);
+
         Image imgWall = new Image(Objects.requireNonNull(getClass().getResourceAsStream("assets/wall.png")));
         Image imgItem = new Image(Objects.requireNonNull(getClass().getResourceAsStream("assets/questionMark.png")));
+        Image evilWall = new Image(Objects.requireNonNull(getClass().getResourceAsStream("assets/evilwall.png")));
 
         for(int j = 0; j<12; j++){
+            int genColOne = rand.nextInt(30), genColTwo = rand.nextInt(28);
             for(int i = 0; i< 28; i++){
                 value=rand.nextInt(100);
-                if(value>=60){
+                if(j == genRowOne || j == genRowTwo){
+                    if(i == genColOne || i == genColTwo) {
+                        ImageView item = new ImageView();
+                        item.setImage(evilWall);
+                        item.setFitHeight(50);
+                        item.setFitWidth(50);
+                        //double x = i, y=0;
+                        PVector location = new PVector(i * 49.8, j * 49.8);
+                        PVector velocity = new PVector(1, 0);
+                        WallSprite notDestructible = new WallSprite(item, location, velocity);
+                        notDestructible.setTranslateX(i*49.8);
+                        notDestructible.setTranslateY(j*49.8);
+                        root.getChildren().add(notDestructible);
+                        evilWallSprites.add(notDestructible);
+
+                    }
+                    continue;
+                }
+                if(value>=90){
                     ImageView item = new ImageView();
                     item.setImage(imgWall);
                     item.setFitHeight(49.8);
@@ -370,16 +446,15 @@ public class DancingLineController {
 
         ImageView item = new ImageView();
         item.setImage(img);
-        item.setFitHeight(Koopa.getRADIUS());
-        item.setFitWidth(Koopa.getRADIUS());
+        item.setFitHeight(30);
+        item.setFitWidth(30);
 
+        item.setTranslateY(- 15);
+        item.setTranslateX(- 15);
         return item;
     }
 
-    public void updateKoopasCounter(){
-        textGreen.setText(String.format("%d", koopasNotDisplayed.stream().filter(k -> Objects.equals(k.getType(), "green")).count()));
-        textRed.setText(String.format("%d", koopasNotDisplayed.stream().filter(k -> Objects.equals(k.getType(), "red")).count()));
-        textBlue.setText(String.format("%d", koopasNotDisplayed.stream().filter(k -> Objects.equals(k.getType(), "blue")).count()));
+    public void generateWall(){
 
     }
 }
