@@ -43,6 +43,8 @@ public class Koopa extends SpriteBouncing {
 
         //bounce with other
         /*
+
+         */
         for (Koopa koopa : list) {
             if (koopa != this) {
                 if (intersects(koopa)) {
@@ -50,6 +52,5 @@ public class Koopa extends SpriteBouncing {
                 }
             }
         }
-         */
     }
 }

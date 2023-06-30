@@ -1,5 +1,5 @@
 .root{
-    -fx-background-image:url('../assets/MenuBackground.png');
+    -fx-background-image:url('../assets/backgroundMenu.jpeg');
     -fx-background-size:cover;
 }
 .custom-button {

@@ -6,19 +6,29 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Label;
 import javafx.scene.shape.QuadCurve;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.io.InputStream;
 
 public class ChangingSceneController {
     @FXML
     private QuadCurve quadCurve;
+    @FXML
+    private Label title;
 
     private Stage stage;
     private Scene scene;
     private Parent root;
 
+    public void initialize() {
+        InputStream is = getClass().getResourceAsStream("font/NineTsukiRegular.ttf");
+        Font tsuki = Font.loadFont(is, 200);
+        title.setFont(tsuki);
+    }
 
     public void switchToGame(ActionEvent event) throws IOException {
         root = FXMLLoader.load(getClass().getResource("dancingline-view.fxml"));
