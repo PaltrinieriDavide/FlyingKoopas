@@ -94,7 +94,7 @@ public class Koopa extends SpriteBouncing {
         double koopaCenterX = koopa.getX() + RADIUS;
         double koopaCenterY = koopa.getY() + RADIUS;
 
-        for (int j = 0; j < Math.max(wallList.size(), questionMarkList.size()); j++){
+        for (int j = 0; j < Math.max(wallList.size(), Math.max(evilWallSprites.size(), questionMarkList.size())); j++){
 
             if (j < wallList.size() && this.getBoundsInParent().intersects(wallList.get(j).getBoundsInParent())){
                 Point2D rectangle = new Point2D(wallList.get(j).localToParent(wallList.get(j).getLocation().x, wallList.get(j).getLocation().y).getX(),
