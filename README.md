@@ -8,7 +8,6 @@
    * [Installing](#Installing)
    * [Contribute](#Contribute)
    * [Credits](#Credits)
-   * [License](#License)
 
 ## Overview
 **Flying Koopas** is a game developed as a project for the OOP exam at UniMoRe computer engineering.
@@ -27,7 +26,34 @@ The launch will be performed once the mouse is released.
 
 ![koopaLaunch](https://github.com/PaltrinieriDavide/dancingLine/assets/102794308/0d90d142-00b2-48f3-b959-a8495f8f2837)
 
-Once all the items have been destroyed, it will be possible to start a new game
+Once all the items have been destroyed, it will be possible to start a new game.
+
+![NewGame](https://github.com/PaltrinieriDavide/dancingLine/assets/102794308/30d9c6bd-6094-40c0-808e-c1d3af4d3630)
+
+## Features
+* different type of **Koopas**
+  * green koopa
+  * red koopa
+  * blue koopa
+* **question marks**
+  * generate a random koopa
+* **evil walls**
+  * cannot be destroyed
+  * move around the map
+ 
+  ## Installing
+
+  ## Contribute
+  contributions are free, everyone can download the project, improve it and fix any bugs.
+
+  ## Credits
+  * Code:
+    * [JavaFX](https://docs.oracle.com/javase/8/javafx/api/toc.htm)
+    * [Sprite and SpriteBouncing](https://github.com/nbicocchi/java-javafx/blob/main/src/main/java/com/nbicocchi/javafx/games/common/Sprite.java) by Nicola Bicocchi
+  * Images:
+    * [pngegg](https://www.pngegg.com/it) 
+
+
 
 
 
