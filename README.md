@@ -25,5 +25,10 @@ The aim of the game is to destroy all items on the screen using koopas which are
 It's possible to **direct** the koopas by holding down the mouse on the screen, and to decide the **launch power** by moving away from the koopas' spawn point. 
 The launch will be performed once the mouse is released.
 
+![koopaLaunch](https://github.com/PaltrinieriDavide/dancingLine/assets/102794308/0d90d142-00b2-48f3-b959-a8495f8f2837)
+
+Once all the items have been destroyed, it will be possible to start a new game
+
+
 
 
